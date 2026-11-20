@@ -1,0 +1,17 @@
+flowchart TB
+  nav["Navigateur<br/>Blade, Tailwind 4, Chart.js"]
+  subgraph app["Application Laravel 12"]
+    rt["Routes web.php"]
+    mw["Middlewares<br/>AgenceActive, EspaceInterne,<br/>AdministrationPlateforme,<br/>rôles et permissions"]
+    ct["Contrôleurs<br/>Dossier, Conteneur, Facture, Client,<br/>Equipe, Alerte, Exports, Portail"]
+    sv["Services<br/>Reference, Franchise, Alerte,<br/>Facture, Journal"]
+    md["Modèles Eloquent et Enums"]
+  end
+  db[("MySQL")]
+  fs["Stockage<br/>documents, logos"]
+  ml["E-mail SMTP<br/>invitations, mot de passe"]
+  cr["Planificateur<br/>jalon:alertes à 07:00"]
+  nav --> rt --> mw --> ct --> sv --> md --> db
+  ct --> fs
+  ct --> ml
+  cr --> sv
