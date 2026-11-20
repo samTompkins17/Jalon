@@ -1,0 +1,105 @@
+classDiagram
+  direction LR
+  class Agence {
+    nom
+    slug
+    type
+    active
+    devise
+  }
+  class User {
+    nom
+    email
+    role
+    permissions
+    statut_activation
+    est_super_admin
+  }
+  class Client {
+    code
+    nom
+    fonction
+  }
+  class Regime {
+    libelle
+  }
+  class Dossier {
+    reference
+    code_suivi
+    etat
+    pays_origine
+    arrivee_prevue
+  }
+  class HistoriqueStatut {
+    jalon
+    date
+    commentaire
+  }
+  class Document {
+    nom
+    valide
+    visible_client
+  }
+  class Conteneur {
+    numero
+    statut
+    fin_franchise
+  }
+  class EvenementConteneur {
+    statut
+    date
+  }
+  class Cout {
+    libelle
+    montant
+  }
+  class Facture {
+    numero
+    statut
+    total_ttc
+    echeance
+  }
+  class FactureLigne {
+    designation
+    montant
+  }
+  class Paiement {
+    montant
+    mode
+    date
+  }
+  class Alerte {
+    type
+    gravite
+    echeance
+    lue
+  }
+  class Notification {
+    lue
+  }
+  class DemandeAgence {
+    nom_agence
+    email
+    statut
+    motif_refus
+  }
+  Agence "1" --> "*" User
+  Agence "1" --> "*" Client
+  Agence "1" --> "*" Dossier
+  Agence "1" --> "*" Facture
+  Agence "0..1" <-- "*" DemandeAgence
+  Client "1" --> "*" Dossier
+  Client "1" --> "*" User : compte portail
+  User "1" --> "*" Dossier : transitaire
+  Regime "1" --> "*" Dossier
+  Dossier "1" *-- "*" HistoriqueStatut
+  Dossier "1" *-- "*" Document
+  Dossier "1" *-- "*" Conteneur
+  Dossier "1" *-- "*" Cout
+  Dossier "0..1" --> "*" Facture
+  Facture "1" *-- "*" FactureLigne
+  Facture "1" *-- "*" Paiement
+  Conteneur "1" *-- "*" EvenementConteneur
+  Conteneur "1" --> "*" Alerte
+  Alerte "1" --> "*" Notification
+  User "1" --> "*" Notification

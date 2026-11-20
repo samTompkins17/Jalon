@@ -1,0 +1,7 @@
+stateDiagram-v2
+  [*] --> impayee: émission
+  impayee --> partielle: paiement partiel
+  partielle --> partielle: autre paiement
+  partielle --> payee: solde réglé
+  impayee --> payee: paiement total
+  payee --> [*]

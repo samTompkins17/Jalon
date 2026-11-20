@@ -1,0 +1,19 @@
+sequenceDiagram
+  autonumber
+  actor A as Agence
+  participant F as Formulaire Jalon
+  participant D as Espace plateforme
+  actor S as Super admin
+  A->>F: Remplit la demande
+  F->>D: Crée la demande, statut nouvelle
+  S->>D: Consulte la file des demandes
+  S->>A: Contacte par e-mail ou WhatsApp, présente l’offre
+  D->>D: Statut contactée
+  alt L’agence accepte
+    S->>D: Statut acceptée
+    S->>S: Déploie l’instance, domaine et base, commande jalon:creer-agence
+    S->>A: Remet l’accès administrateur
+    A->>A: Crée ses équipes et invite ses employés
+  else L’agence refuse
+    S->>D: Statut refusée, avec motif
+  end

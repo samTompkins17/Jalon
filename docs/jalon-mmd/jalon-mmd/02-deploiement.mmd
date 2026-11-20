@@ -1,0 +1,13 @@
+flowchart LR
+  code["Même code source<br/>dépôt Git, branche main"]
+  subgraph saas["Mode SaaS : plateforme Jalon"]
+    w1["Instance partagée<br/>transitaires solo"] --> d1[("MySQL partagée")]
+  end
+  subgraph erp["Mode ERP : une instance par agence"]
+    w2["Agence A<br/>domaine propre"] --> d2[("MySQL A")]
+    w3["Agence B<br/>domaine propre"] --> d3[("MySQL B")]
+  end
+  sa["Super admin<br/>file des demandes d’agence"] --> w1
+  code --> w1
+  code --> w2
+  code --> w3

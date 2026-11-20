@@ -10,11 +10,17 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
-    public function test_root_redirects_to_the_dashboard(): void
+    public function test_guest_sees_the_vitrine_on_the_root(): void
     {
-        $response = $this->get('/');
+        $this->get('/')->assertOk()->assertSee('Chaque dossier');
+    }
 
-        $response->assertRedirect('/tableau-de-bord');
+    public function test_root_redirects_guests_to_login_without_vitrine(): void
+    {
+        config(['app.vitrine' => false]);
+
+        // Sans vitrine, un visiteur non connecté part vers la connexion.
+        $this->get('/')->assertRedirect('/connexion');
     }
 
     public function test_guest_can_open_the_login_page(): void

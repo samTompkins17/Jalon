@@ -25,30 +25,50 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     $utilisateur = Auth::user();
 
-    return $utilisateur instanceof User && $utilisateur->estSuperAdmin()
+    if (! $utilisateur instanceof User) {
+        return config('app.vitrine')
+            ? view('vitrine')
+            : redirect()->route('connexion');
+    }
+
+    return $utilisateur->estSuperAdmin()
         ? redirect()->route('plateforme.index')
         : redirect()->route('tableau-de-bord');
 });
 
+Route::view('/conditions-utilisation', 'conditions')->name('conditions');
+
 Route::middleware('guest')->group(function () {
     Route::get('/connexion', [AuthController::class, 'create'])->name('connexion');
-    Route::post('/connexion', [AuthController::class, 'store'])->name('connexion.store');
+    Route::post('/connexion', [AuthController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('connexion.store');
 
     Route::get('/inscription', [InscriptionController::class, 'create'])->name('inscription');
-    Route::post('/inscription', [InscriptionController::class, 'store'])->name('inscription.store');
-    Route::post('/inscription/agence', [InscriptionController::class, 'demanderAgence'])->name('inscription.agence');
+    Route::post('/inscription', [InscriptionController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('inscription.store');
+    Route::post('/inscription/agence', [InscriptionController::class, 'demanderAgence'])
+        ->middleware('throttle:6,1')
+        ->name('inscription.agence');
 
     Route::get('/mot-de-passe-oublie', [MotDePasseController::class, 'demande'])->name('mot-de-passe.demande');
-    Route::post('/mot-de-passe-oublie', [MotDePasseController::class, 'envoyer'])->name('mot-de-passe.envoyer');
+    Route::post('/mot-de-passe-oublie', [MotDePasseController::class, 'envoyer'])
+        ->middleware('throttle:6,1')
+        ->name('mot-de-passe.envoyer');
     Route::get('/reinitialiser-mot-de-passe/{token}', [MotDePasseController::class, 'formulaire'])->name('mot-de-passe.formulaire');
-    Route::post('/reinitialiser-mot-de-passe', [MotDePasseController::class, 'reinitialiser'])->name('mot-de-passe.reinitialiser');
+    Route::post('/reinitialiser-mot-de-passe', [MotDePasseController::class, 'reinitialiser'])
+        ->middleware('throttle:6,1')
+        ->name('mot-de-passe.reinitialiser');
 
     Route::get('/invitation/{token}', [ActivationController::class, 'show'])->name('activation.show');
     Route::post('/invitation/{token}', [ActivationController::class, 'store'])->name('activation.store');
 });
 
 // Suivi public par code (sans compte).
-Route::get('/suivi/{code?}', [PortailController::class, 'suivi'])->name('suivi');
+Route::get('/suivi/{code?}', [PortailController::class, 'suivi'])
+    ->middleware('throttle:30,1')
+    ->name('suivi');
 
 Route::post('/deconnexion', [AuthController::class, 'destroy'])
     ->middleware('auth')
