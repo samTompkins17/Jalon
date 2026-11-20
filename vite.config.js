@@ -15,4 +15,8 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    build: {
+        // Aucune sourcemap en production : le code source ne doit pas être publié.
+        sourcemap: false,
+    },
 });
