@@ -1,0 +1,6 @@
+stateDiagram-v2
+  [*] --> au_port
+  au_port --> sorti
+  sorti --> restitue
+  sorti --> au_port: retour arrière
+  restitue --> sorti: retour arrière
