@@ -1,0 +1,23 @@
+stateDiagram-v2
+  direction LR
+  state "1 Dossier créé" as s1
+  state "2 Documents transmis" as s2
+  state "3 ECTN / BESC" as s3
+  state "4 Manifeste déposé" as s4
+  state "5 Déclaration soumise" as s5
+  state "6 Inspection" as s6
+  state "7 Droits à payer" as s7
+  state "8 Bon à enlever" as s8
+  state "9 Marchandise livrée" as s9
+  [*] --> Brouillon
+  Brouillon --> s1
+  s1 --> s2
+  s2 --> s3
+  s3 --> s4
+  s4 --> s5
+  s5 --> s6
+  s6 --> s7
+  s7 --> s8
+  s8 --> s9
+  s9 --> [*]
+  s9 --> s8: recul admin
