@@ -1,0 +1,8 @@
+stateDiagram-v2
+  [*] --> nouvelle
+  nouvelle --> contactee
+  contactee --> acceptee
+  contactee --> refusee
+  nouvelle --> refusee
+  acceptee --> [*]
+  refusee --> [*]
