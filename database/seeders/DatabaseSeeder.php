@@ -8,10 +8,19 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Données de référence : nécessaires partout.
         $this->call([
-            AgenceSeeder::class,
             RegimeSeeder::class,
             JalonSeeder::class,
+        ]);
+
+        // Démonstration : jamais en production (comptes « password », dossiers fictifs).
+        if (app()->environment('production')) {
+            return;
+        }
+
+        $this->call([
+            AgenceSeeder::class,
             UtilisateurSeeder::class,
             ClientSeeder::class,
             DossierSeeder::class,

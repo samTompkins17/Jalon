@@ -25,3 +25,9 @@ yarn-error.log
 /Maquette
 /.freebuff/
 /console-*.png
+/vitrine-*.png
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+/storage/app/backups/

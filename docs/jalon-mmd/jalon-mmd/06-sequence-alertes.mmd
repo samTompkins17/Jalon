@@ -1,0 +1,16 @@
+sequenceDiagram
+  autonumber
+  participant P as Planificateur 07:00
+  participant G as jalon:alertes
+  participant AS as AlerteService
+  participant FS as FranchiseService
+  participant DB as MySQL
+  actor U as Utilisateur
+  P->>G: Lance la commande
+  G->>AS: Génère les alertes
+  AS->>DB: Lit les conteneurs au port
+  AS->>FS: Calcule la fin de franchise
+  FS-->>AS: Jours restants
+  AS->>DB: Crée l’alerte J-2, J-1 ou J0, clé unique conteneur et échéance
+  AS->>DB: Crée les notifications
+  U->>DB: Ouvre le centre d’alertes
