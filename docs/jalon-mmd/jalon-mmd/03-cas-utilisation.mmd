@@ -1,0 +1,38 @@
+flowchart LR
+  v([Visiteur])
+  c([Client])
+  t([Transitaire])
+  k([Comptable])
+  a([Administrateur d’agence])
+  s([Super admin plateforme])
+  subgraph P["Jalon"]
+    u1["Suivre un dossier par code"]
+    u2["S’inscrire en solo ou demander une agence"]
+    u3["Consulter ses dossiers et factures"]
+    u4["Créer et faire avancer un dossier"]
+    u5["Gérer conteneurs et documents"]
+    u6["Consulter les alertes de franchise"]
+    u7["Facturer et encaisser"]
+    u8["Exporter et consulter les rapports"]
+    u9["Gérer équipe, rôles et paramètres"]
+    u10["Faire reculer un jalon"]
+    u11["Traiter les demandes d’agence"]
+    u12["Suspendre ou réactiver une agence"]
+  end
+  v --> u1
+  v --> u2
+  c --> u1
+  c --> u3
+  t --> u4
+  t --> u5
+  t --> u6
+  k --> u6
+  k --> u7
+  k --> u8
+  a --> u4
+  a --> u7
+  a --> u8
+  a --> u9
+  a --> u10
+  s --> u11
+  s --> u12
