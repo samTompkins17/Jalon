@@ -127,23 +127,26 @@ section[id]{scroll-margin-top:86px}
 .jour-lignes .fin{margin-left:auto;color:var(--c-muted);font-size:.8rem;white-space:nowrap}
 .jour-bas{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:12px;border-top:var(--vt-hair);font-size:.8rem;color:var(--c-muted)}
 
-/* ---------- Galerie ---------- */
-.sh{display:grid;gap:70px;margin-top:6px}
-.sh-l{display:grid;grid-template-columns:1.3fr .7fr;gap:46px;align-items:center}
-.sh-l:nth-child(even){grid-template-columns:.7fr 1.3fr}
-.sh-l:nth-child(even) .sh-f{order:2}
-.sh-f{border:1px solid var(--c-line);border-radius:18px;background:var(--c-surface);overflow:hidden;box-shadow:var(--ombre-pose)}
-.sh-b{display:flex;gap:6px;padding:11px 14px;border-bottom:var(--vt-hair);background:var(--c-surface-2)}
-.sh-b i{width:8px;height:8px;border-radius:50%;background:var(--c-line-fort)}
-.sh-i,.ph-i{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
-.sh-i{height:min(42vw,420px);overflow:hidden}
-.sh-i img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform 1.4s var(--ease)}
-.sh-f:hover .sh-i img{transform:scale(1.02)}
-.sh-t h3{font-size:clamp(1.3rem,2.2vw,1.75rem);letter-spacing:-.028em;line-height:1.16;margin:0 0 12px}
-.sh-t p{color:var(--c-ink-2);line-height:1.6;margin:0;font-size:.95rem}
-.sh-t ul{margin:14px 0 0;padding:0;list-style:none;color:var(--c-muted);font-size:.88rem;line-height:1.6}
-.sh-t li{display:flex;gap:10px;padding:4px 0}
-.sh-t li::before{content:"";flex:none;width:5px;height:5px;margin-top:.55em;border-radius:50%;background:var(--c-brand);opacity:.65}
+/* ---------- Galerie épinglée ---------- */
+.gx{display:grid;grid-template-columns:1.12fr .88fr;gap:52px;align-items:start}
+.gx-visuel{position:sticky;top:92px}
+.gx-cadre{border:1px solid var(--c-line);border-radius:18px;background:var(--c-surface);overflow:hidden;box-shadow:var(--ombre-pose)}
+.gx-ouvrir{display:block;width:100%;padding:0;border:0;background:var(--c-surface-2);cursor:zoom-in}
+.gx-images{position:relative;display:block;aspect-ratio:16 / 11;background:var(--c-surface-2)}
+.gx-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;opacity:0;transition:opacity .45s var(--ease)}
+.gx-img.actif{opacity:1}
+.gx-pied{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 15px;border-top:var(--vt-hair);color:var(--c-muted);font-size:.78rem}
+.gx-compteur{font-variant-numeric:tabular-nums;letter-spacing:.1em}
+.gx-compteur b{color:var(--c-brand);font-weight:600}
+.gx-texte{list-style:none;margin:0;padding:0}
+.gx-texte li{min-height:54vh;display:flex;flex-direction:column;justify-content:center;padding:20px 0;opacity:.32;transition:opacity .45s var(--ease)}
+.gx-texte li.actif{opacity:1}
+.gx-texte h3{font-size:clamp(1.3rem,2.2vw,1.75rem);letter-spacing:-.028em;line-height:1.16;margin:0 0 12px}
+.gx-texte p{color:var(--c-ink-2);line-height:1.6;margin:0;font-size:.95rem}
+.gx-texte ul{margin:14px 0 0;padding:0;list-style:none;color:var(--c-muted);font-size:.88rem;line-height:1.6}
+.gx-texte li li{display:flex;gap:10px;padding:4px 0;min-height:0}
+.gx-texte li li::before{content:"";flex:none;width:5px;height:5px;margin-top:.55em;border-radius:50%;background:var(--c-brand);opacity:.65}
+.gx-mini{display:none}
 .ph{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:30px;align-items:start;margin-top:26px}
 .ph figure{margin:0;text-align:center}
 .ph-i{border:1px solid var(--c-line);border-radius:24px;overflow:hidden;box-shadow:var(--ombre-pose);max-width:240px;margin:0 auto 14px;background:var(--c-surface)}
@@ -241,10 +244,12 @@ section[id]{scroll-margin-top:86px}
   .vt-liens{display:none}
   .jour article,.jour article:nth-child(even){grid-template-columns:1fr;gap:20px;padding:32px 0}
   .jour article:nth-child(even) .jour-texte{order:0}
-  .sh-l,.sh-l:nth-child(even){grid-template-columns:1fr;gap:20px}
-  .sh-l:nth-child(even) .sh-f{order:0}
-  .sh{gap:48px}
-  .sh-i{height:250px}
+  .gx{grid-template-columns:1fr;gap:0}
+  .gx-visuel{display:none}
+  .gx-texte li{min-height:0;opacity:1;padding:26px 0;border-top:var(--vt-hair)}
+  .gx-texte li:first-child{border-top:0;padding-top:0}
+  .gx-mini{display:block;width:100%;padding:0;border:1px solid var(--c-line);border-radius:14px;overflow:hidden;background:var(--c-surface);box-shadow:var(--ombre-fine);margin-bottom:18px;cursor:zoom-in}
+  .gx-mini img{display:block;width:100%;height:auto;max-height:340px;object-fit:cover;object-position:top}
   .mod{grid-template-columns:1fr;gap:26px}
   .secu,.chiffres{grid-template-columns:repeat(2,1fr);gap:18px}
   .pionniers{grid-template-columns:1fr;gap:18px}
@@ -266,10 +271,13 @@ section[id]{scroll-margin-top:86px}
 </head>
 <body id="haut">
 @php
-    $whatsapp = trim((string) config('app.whatsapp'));
-    $lienDemo = $whatsapp !== ''
-        ? 'https://wa.me/'.preg_replace('/\D/', '', $whatsapp).'?text='.rawurlencode('Bonjour, je souhaite une démonstration de Jalon pour mon agence.')
-        : route('inscription', ['vous' => 'agence']);
+    // WhatsApp si un numéro est configuré, sinon demande de démonstration par e-mail :
+    // ce bouton ne renvoie jamais vers le formulaire d'inscription.
+    $whatsapp = preg_replace('/\D/', '', (string) config('app.whatsapp'));
+    $demoExterne = $whatsapp !== '';
+    $lienDemo = $demoExterne
+        ? 'https://wa.me/'.$whatsapp.'?text='.rawurlencode('Bonjour, je souhaite une démonstration de Jalon pour mon agence.')
+        : 'mailto:contact@jalon.tg?subject='.rawurlencode('Demande de démonstration Jalon');
 @endphp
 
 <div class="vt-barre" id="barre"><div class="vt"><div class="vt-nav">
@@ -387,6 +395,7 @@ section[id]{scroll-margin-top:86px}
 <li><span class="pt pt--vide"></span>B/L<span class="fin">attendu</span></li>
 </ul>
 <div class="jour-bas"><span>3 conteneurs</span><span>Code : JLK-4821</span></div>
+<p class="vt-note">Exemple d’illustration, données fictives.</p>
 </div>
 </article>
 
@@ -404,6 +413,7 @@ section[id]{scroll-margin-top:86px}
 <li><span class="pt pt--vide"></span>Certificat d’origine<span class="fin">à fournir</span></li>
 </ul>
 <div class="jour-bas"><span>Partagé au client</span><span>3 pièces</span></div>
+<p class="vt-note">Exemple d’illustration, données fictives.</p>
 </div>
 </article>
 
@@ -421,6 +431,7 @@ section[id]{scroll-margin-top:86px}
 <li><span class="pt pt--vide"></span>Droits à payer<span class="fin">à venir</span></li>
 </ul>
 <div class="jour-bas"><span>Franchise conteneur</span><span>J-2</span></div>
+<p class="vt-note">Exemple d’illustration, données fictives.</p>
 </div>
 </article>
 
@@ -438,6 +449,7 @@ section[id]{scroll-margin-top:86px}
 <li><span class="pt pt--ok"></span>Acompte reçu<span class="fin">-100 000 F</span></li>
 </ul>
 <div class="jour-bas"><span>Solde à venir</span><span>177 500 F</span></div>
+<p class="vt-note">Exemple d’illustration, données fictives.</p>
 </div>
 </article>
 </div>
@@ -471,18 +483,33 @@ section[id]{scroll-margin-top:86px}
 </div>
 <span class="vt-index">03 / 07</span>
 </div>
-<div class="sh">
-@foreach ($ecrans as $n => $e)
-<article class="sh-l">
-<div class="sh-f" data-r><div class="sh-b"><i></i><i></i><i></i></div>
-<button type="button" class="sh-i" data-zoom="{{ asset('img/captures/'.$e[0].'.webp') }}" aria-label="Agrandir : {{ $e[2] }}"><img src="{{ asset('img/captures/'.$e[0].'.webp') }}" alt="{{ $e[2] }}" loading="lazy" decoding="async"></button></div>
-<div class="sh-t" data-r style="--d:1">
-<p class="vt-eyebrow">{{ str_pad($n + 1, 2, '0', STR_PAD_LEFT) }} · {{ $e[1] }}</p>
-<h3>{{ $e[2] }}</h3><p>{{ $e[3] }}</p>
-<ul>@foreach ($e[4] as $pt)<li>{{ $pt }}</li>@endforeach</ul>
-</div>
-</article>
+<div class="gx">
+<div class="gx-visuel" data-r>
+<div class="gx-cadre">
+<div class="sh-b"><i></i><i></i><i></i></div>
+<button type="button" class="gx-ouvrir" id="gxOuvrir" data-zoom="{{ asset('img/captures/'.$ecrans[0][0].'.webp') }}" aria-label="Agrandir l’aperçu">
+<span class="gx-images">
+@foreach ($ecrans as $i => $e)
+<img class="gx-img @if ($i === 0) actif @endif" src="{{ asset('img/captures/'.$e[0].'.webp') }}" alt="{{ $e[2] }}" @if ($i > 0) loading="lazy" @endif decoding="async">
 @endforeach
+</span>
+</button>
+<div class="gx-pied"><span class="gx-compteur"><b id="gxNum">01</b> / {{ str_pad(count($ecrans), 2, '0', STR_PAD_LEFT) }}</span><span>Cliquez pour agrandir</span></div>
+</div>
+<p class="vt-note">Maquettes filigranées, données fictives.</p>
+</div>
+
+<ol class="gx-texte" id="gxListe">
+@foreach ($ecrans as $i => $e)
+<li data-ecran="{{ $i }}" class="@if ($i === 0) actif @endif">
+<button type="button" class="gx-mini" data-zoom="{{ asset('img/captures/'.$e[0].'.webp') }}" aria-label="Agrandir : {{ $e[2] }}"><img src="{{ asset('img/captures/'.$e[0].'.webp') }}" alt="{{ $e[2] }}" loading="lazy" decoding="async"></button>
+<p class="vt-eyebrow">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }} · {{ $e[1] }}</p>
+<h3>{{ $e[2] }}</h3>
+<p>{{ $e[3] }}</p>
+<ul>@foreach ($e[4] as $pt)<li>{{ $pt }}</li>@endforeach</ul>
+</li>
+@endforeach
+</ol>
 </div>
 
 <div style="margin-top:64px">
@@ -680,7 +707,7 @@ section[id]{scroll-margin-top:86px}
 <ul>
 <li><a href="{{ route('connexion') }}">Connexion</a></li>
 <li><a href="{{ route('inscription') }}">Créer mon espace</a></li>
-<li><a href="{{ $lienDemo }}"@if ($whatsapp !== '') rel="noopener" target="_blank"@endif>Demander une démo</a></li>
+<li><a href="{{ $lienDemo }}"@if ($demoExterne) rel="noopener" target="_blank"@endif>Demander une démo</a></li>
 <li><a href="{{ route('suivi') }}">Suivre un dossier</a></li>
 </ul>
 </div>
@@ -724,6 +751,50 @@ section[id]{scroll-margin-top:86px}
   function fermer() { lb.hidden = true; document.body.style.overflow = ''; }
   lb.addEventListener('click', fermer);
   addEventListener('keydown', function (e) { if (e.key === 'Escape') fermer(); });
+
+  // Aperçu épinglé : l'écran et sa description changent au fil du scroll.
+  var gxItems = document.querySelectorAll('#gxListe > li');
+  var gxImgs = document.querySelectorAll('.gx-img');
+  var gxNum = document.getElementById('gxNum');
+  var gxOuvrir = document.getElementById('gxOuvrir');
+
+  function gxAfficher(i) {
+    gxImgs.forEach(function (img, k) { img.classList.toggle('actif', k === i); });
+    gxItems.forEach(function (li, k) { li.classList.toggle('actif', k === i); });
+    if (gxNum) { gxNum.textContent = ('0' + (i + 1)).slice(-2); }
+    if (gxOuvrir && gxImgs[i]) { gxOuvrir.dataset.zoom = gxImgs[i].src; }
+  }
+
+  if (gxItems.length && gxImgs.length) {
+    var gxVisible = -1;
+    var gxPlanifie = false;
+
+    var gxSync = function () {
+      gxPlanifie = false;
+      var milieu = innerHeight * 0.5 + scrollY;
+      var meilleur = 0;
+      var ecart = Infinity;
+
+      gxItems.forEach(function (li, k) {
+        var r = li.getBoundingClientRect();
+        var centre = r.top + scrollY + r.height / 2;
+        var distance = Math.abs(centre - milieu);
+
+        if (distance < ecart) { ecart = distance; meilleur = k; }
+      });
+
+      if (meilleur !== gxVisible) {
+        gxVisible = meilleur;
+        gxAfficher(meilleur);
+      }
+    };
+
+    addEventListener('scroll', function () {
+      if (!gxPlanifie) { gxPlanifie = true; setTimeout(gxSync, 20); }
+    }, { passive: true });
+    addEventListener('resize', gxSync);
+    gxSync();
+  }
 })();
 </script>
 </body>
