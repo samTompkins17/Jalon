@@ -214,6 +214,54 @@ section[id]{scroll-margin-top:86px}
 .fq details[open] summary::after{transform:rotate(45deg)}
 .fq p{color:var(--c-ink-2);line-height:1.62;max-width:74ch;margin:13px 0 0;font-size:.94rem}
 
+/* ---------- Vie discrète du héro, rail et caméo ---------- */
+.vt-puce{animation:puceSouffle 5s ease-in-out infinite}
+@keyframes puceSouffle{
+  0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--c-rose) 26%,transparent)}
+  50%{box-shadow:0 0 0 6px transparent}
+}
+.vt-jalons li.actuel::before{animation:jalonSouffle 3.2s ease-in-out infinite}
+@keyframes jalonSouffle{
+  0%,100%{box-shadow:0 0 0 4px var(--c-brand-soft)}
+  50%{box-shadow:0 0 0 7px var(--c-brand-soft)}
+}
+.vt-jauge i{transition:width .7s var(--ease)}
+#carteJalons{transition:opacity .22s linear}
+#carteJalons.retour{opacity:.4}
+
+.rail{margin:0 0 10px;padding:22px 0 6px;border-top:var(--vt-hair)}
+.rail-scene{position:relative;height:64px}
+.rail-voie{position:absolute;left:0;right:0;top:22px;height:1px;background:var(--c-line)}
+.rail-point{position:absolute;top:22px;width:9px;height:9px;border-radius:50%;background:var(--c-surface);border:1px solid var(--c-line-fort);transform:translate(-50%,-50%)}
+.rail-point::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--c-brand);opacity:0;animation:railPulse 10s linear infinite}
+.rail-point:nth-child(3)::after{animation-delay:0s}
+.rail-point:nth-child(4)::after{animation-delay:2.4s}
+.rail-point:nth-child(5)::after{animation-delay:4.8s}
+.rail-point:nth-child(6)::after{animation-delay:7.2s}
+@keyframes railPulse{
+  0%{opacity:0;transform:scale(.6)}
+  6%{opacity:.55;transform:scale(1)}
+  22%{opacity:0;transform:scale(1.7)}
+  100%{opacity:0;transform:scale(1.7)}
+}
+.rail-conteneur{position:absolute;top:22px;left:6%;width:46px;height:22px;margin:-11px 0 0 -23px;border-radius:4px;background:var(--c-brand);box-shadow:var(--ombre-fine);animation:railTrajet 10s var(--ease) infinite}
+.rail-conteneur::before{content:"";position:absolute;inset:4px 9px;border-left:2px solid color-mix(in srgb,#fff 55%,transparent);border-right:2px solid color-mix(in srgb,#fff 55%,transparent)}
+@keyframes railTrajet{
+  0%,8%{left:6%;opacity:1}
+  26%,34%{left:34%}
+  56%,64%{left:63%}
+  86%,92%{left:92%;opacity:1}
+  100%{left:92%;opacity:0}
+}
+.rail-mot{position:absolute;top:36px;transform:translateX(-50%);color:var(--c-muted);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.cameo{width:228px;max-width:40vw;color:var(--c-ink-2);opacity:.9;align-self:flex-end;margin-bottom:2px}
+.cameo svg{display:block;width:100%;height:auto}
+.cameo .trait{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.cameo .sol{stroke:var(--c-line-fort);stroke-width:1}
+.cameo .porte{fill:none;stroke:currentColor;stroke-width:1.2;opacity:.45}
+.cameo .accent{fill:none;stroke:var(--c-brand);stroke-width:1.6}
+.cameo .accent-fin{fill:none;stroke:var(--c-brand);stroke-width:1.2;stroke-linecap:round}
+
 /* ---------- Appel final ---------- */
 .vt-final{position:relative;overflow:hidden;margin:0 auto 8px;padding:72px 40px;text-align:center;border-radius:26px;background:var(--c-ink);color:var(--c-page);box-shadow:var(--ombre-pose)}
 .vt-final::before{content:"";position:absolute;inset:-40% -10% auto;height:520px;background:radial-gradient(50% 60% at 50% 0%,color-mix(in srgb,var(--c-brand) 46%,transparent),transparent 72%);opacity:.5;pointer-events:none}
@@ -256,6 +304,8 @@ section[id]{scroll-margin-top:86px}
   .offres{grid-template-columns:1fr}
   .vt-entete{grid-template-columns:1fr}
   .vt-index{display:none}
+  .cameo{display:none}
+  .rail-mot{font-size:.62rem;letter-spacing:.1em}
   .vt-pied-haut{grid-template-columns:1fr 1fr;gap:30px;padding:38px 0 30px}
   .vt-marque{grid-column:1/-1}
   .vt-section{padding:54px 0}
@@ -329,7 +379,7 @@ section[id]{scroll-margin-top:86px}
 <div><small>Dossier JL-2027-0031</small><strong>Société Adjo Import</strong></div>
 <span class="vt-puce">Franchise : J-2</span>
 </div>
-<ol class="vt-jalons">
+<ol class="vt-jalons" id="carteJalons">
 <li class="fait">Dossier créé</li>
 <li class="fait">Documents transmis</li>
 <li class="fait">ECTN / BESC</li>
@@ -340,7 +390,7 @@ section[id]{scroll-margin-top:86px}
 <li>Bon à enlever</li>
 <li>Marchandise livrée</li>
 </ol>
-<div class="vt-carte-pied"><span>Étape 6 sur 9</span><span class="vt-jauge" aria-hidden="true"><i></i></span></div>
+<div class="vt-carte-pied"><span id="carteEtape">Étape 6 sur 9</span><span class="vt-jauge" aria-hidden="true"><i id="carteJauge"></i></span></div>
 <p class="vt-note">Exemple d’illustration, données fictives.</p>
 </aside>
 </section>
@@ -378,6 +428,21 @@ section[id]{scroll-margin-top:86px}
 <p class="vt-intro" data-r>Suivez le dossier JL-2027-0031. Chaque moment montre ce que Jalon enregistre et ce que votre client voit.</p>
 </div>
 <span class="vt-index">02 / 07</span>
+</div>
+
+<div class="rail" data-r aria-hidden="true">
+<div class="rail-scene">
+<span class="rail-voie"></span>
+<span class="rail-conteneur"></span>
+<span class="rail-point" style="left:6%"></span>
+<span class="rail-point" style="left:34%"></span>
+<span class="rail-point" style="left:63%"></span>
+<span class="rail-point" style="left:92%"></span>
+<span class="rail-mot" style="left:6%">Port</span>
+<span class="rail-mot" style="left:34%">Douane</span>
+<span class="rail-mot" style="left:63%">Droits</span>
+<span class="rail-mot" style="left:92%">Livraison</span>
+</div>
 </div>
 
 <div class="jour">
@@ -631,6 +696,22 @@ section[id]{scroll-margin-top:86px}
 <h2 data-r>Les premières agences installent Jalon avec nous.</h2>
 <p class="vt-intro" data-r>Vous démarrez avec l’équipe, pas avec un mode d’emploi.</p>
 </div>
+<div class="cameo" data-r aria-hidden="true">
+<svg viewBox="0 0 220 150" role="presentation" focusable="false">
+<line class="sol" x1="6" y1="132" x2="214" y2="132"/>
+<rect class="porte" x="136" y="66" width="52" height="20" rx="3"/>
+<rect class="trait" x="120" y="90" width="82" height="36" rx="4"/>
+<line class="trait" x1="134" y1="90" x2="134" y2="126"/>
+<line class="trait" x1="188" y1="90" x2="188" y2="126"/>
+<circle class="trait" cx="58" cy="50" r="11"/>
+<path class="trait" d="M58 61 V100"/>
+<path class="trait" d="M58 100 L48 125 M58 100 L68 125"/>
+<path class="trait" d="M58 72 L42 90"/>
+<path class="trait" d="M58 74 L77 82"/>
+<rect class="accent" x="76" y="75" width="19" height="23" rx="2"/>
+<path class="accent-fin" d="M81 83 H90 M81 88 H87"/>
+</svg>
+</div>
 </div>
 <div class="pionniers">
 <div data-r><i>01</i><b>Installation accompagnée</b><p>Nous paramétrons vos jalons, vos documents et votre facturation avec vous.</p></div>
@@ -794,6 +875,40 @@ section[id]{scroll-margin-top:86px}
     }, { passive: true });
     addEventListener('resize', gxSync);
     gxSync();
+  }
+
+  // Carte du héro : le dossier avance d'un jalon toutes les 4 secondes,
+  // puis repart de l'étape 6 en fondu. Désactivé si le mouvement est refusé.
+  var carteJalons = document.getElementById('carteJalons');
+
+  if (carteJalons && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var jalons = carteJalons.querySelectorAll('li');
+    var carteEtape = document.getElementById('carteEtape');
+    var carteJauge = document.getElementById('carteJauge');
+    var courant = 5;
+
+    var carteDessiner = function (i) {
+      jalons.forEach(function (li, k) {
+        li.classList.toggle('fait', k < i);
+        li.classList.toggle('actuel', k === i);
+      });
+      if (carteEtape) { carteEtape.textContent = 'Étape ' + (i + 1) + ' sur ' + jalons.length; }
+      if (carteJauge) { carteJauge.style.width = Math.round(((i + 1) / jalons.length) * 100) + '%'; }
+    };
+
+    setInterval(function () {
+      if (courant >= jalons.length - 1) {
+        carteJalons.classList.add('retour');
+        setTimeout(function () {
+          courant = 5;
+          carteDessiner(courant);
+          carteJalons.classList.remove('retour');
+        }, 260);
+      } else {
+        courant += 1;
+        carteDessiner(courant);
+      }
+    }, 4000);
   }
 })();
 </script>
