@@ -12,7 +12,7 @@ class ExampleTest extends TestCase
      */
     public function test_guest_sees_the_vitrine_on_the_root(): void
     {
-        $this->get('/')->assertOk()->assertSee('Chaque dossier');
+        $this->get('/')->assertOk()->assertSee('Vos dossiers avancent');
     }
 
     public function test_root_redirects_guests_to_login_without_vitrine(): void
