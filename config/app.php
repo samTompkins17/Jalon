@@ -125,4 +125,7 @@ return [
     
     'vitrine' => env('APP_VITRINE', true),
 
+    // Numéro WhatsApp de contact, format international sans espace (228...).
+    'whatsapp' => env('APP_WHATSAPP'),
+
 ];
