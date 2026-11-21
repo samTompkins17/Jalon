@@ -214,38 +214,35 @@ section[id]{scroll-margin-top:86px}
 .fq details[open] summary::after{transform:rotate(45deg)}
 .fq p{color:var(--c-ink-2);line-height:1.62;max-width:74ch;margin:13px 0 0;font-size:.94rem}
 
-/* ---------- Vie discrète du héro, rail et caméo ---------- */
+/* ---------- Vie discrète : carte du héro, rail, caméo ---------- */
 .vt-puce{animation:puceSouffle 5s ease-in-out infinite}
 @keyframes puceSouffle{
-  0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--c-rose) 26%,transparent)}
+  0%,100%{box-shadow:0 0 0 0 var(--c-brand-soft)}
   50%{box-shadow:0 0 0 6px transparent}
 }
+.vt-jalons{transition:opacity .22s linear}
+.vt-jalons.retour{opacity:.4}
 .vt-jalons li.actuel::before{animation:jalonSouffle 3.2s ease-in-out infinite}
 @keyframes jalonSouffle{
   0%,100%{box-shadow:0 0 0 4px var(--c-brand-soft)}
   50%{box-shadow:0 0 0 7px var(--c-brand-soft)}
 }
 .vt-jauge i{transition:width .7s var(--ease)}
-#carteJalons{transition:opacity .22s linear}
-#carteJalons.retour{opacity:.4}
 
 .rail{margin:0 0 10px;padding:22px 0 6px;border-top:var(--vt-hair)}
 .rail-scene{position:relative;height:64px}
 .rail-voie{position:absolute;left:0;right:0;top:22px;height:1px;background:var(--c-line)}
-.rail-point{position:absolute;top:22px;width:9px;height:9px;border-radius:50%;background:var(--c-surface);border:1px solid var(--c-line-fort);transform:translate(-50%,-50%)}
-.rail-point::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--c-brand);opacity:0;animation:railPulse 10s linear infinite}
-.rail-point:nth-child(3)::after{animation-delay:0s}
-.rail-point:nth-child(4)::after{animation-delay:2.4s}
-.rail-point:nth-child(5)::after{animation-delay:4.8s}
-.rail-point:nth-child(6)::after{animation-delay:7.2s}
+.rail-etape{position:absolute;top:36px;left:var(--x);transform:translateX(-50%);color:var(--c-muted);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.rail-point{position:absolute;top:-14px;left:50%;width:9px;height:9px;border-radius:50%;background:var(--c-surface);border:1px solid var(--c-line-fort);transform:translate(-50%,-50%)}
+.rail-point::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--c-brand);opacity:0;animation:railPulse 10s linear infinite;animation-delay:var(--d,0s)}
 @keyframes railPulse{
   0%{opacity:0;transform:scale(.6)}
   6%{opacity:.55;transform:scale(1)}
   22%{opacity:0;transform:scale(1.7)}
   100%{opacity:0;transform:scale(1.7)}
 }
-.rail-conteneur{position:absolute;top:22px;left:6%;width:46px;height:22px;margin:-11px 0 0 -23px;border-radius:4px;background:var(--c-brand);box-shadow:var(--ombre-fine);animation:railTrajet 10s var(--ease) infinite}
-.rail-conteneur::before{content:"";position:absolute;inset:4px 9px;border-left:2px solid color-mix(in srgb,#fff 55%,transparent);border-right:2px solid color-mix(in srgb,#fff 55%,transparent)}
+.rail-conteneur{position:absolute;top:22px;left:6%;width:46px;height:22px;border-radius:4px;background:var(--c-brand);box-shadow:var(--ombre-fine);transform:translate(-50%,-50%);animation:railTrajet 10s var(--ease) infinite}
+.rail-conteneur::before{content:"";position:absolute;inset:4px 9px;border-left:2px solid rgba(255,255,255,.5);border-right:2px solid rgba(255,255,255,.5)}
 @keyframes railTrajet{
   0%,8%{left:6%;opacity:1}
   26%,34%{left:34%}
@@ -253,12 +250,11 @@ section[id]{scroll-margin-top:86px}
   86%,92%{left:92%;opacity:1}
   100%{left:92%;opacity:0}
 }
-.rail-mot{position:absolute;top:36px;transform:translateX(-50%);color:var(--c-muted);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
-.cameo{width:228px;max-width:40vw;color:var(--c-ink-2);opacity:.9;align-self:flex-end;margin-bottom:2px}
+
+.cameo{width:228px;max-width:40vw;color:var(--c-ink-2);opacity:.9}
 .cameo svg{display:block;width:100%;height:auto}
-.cameo .trait{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
-.cameo .sol{stroke:var(--c-line-fort);stroke-width:1}
-.cameo .porte{fill:none;stroke:currentColor;stroke-width:1.2;opacity:.45}
+.cameo .trait{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.cameo .sol{stroke:currentColor;stroke-width:1;opacity:.25}
 .cameo .accent{fill:none;stroke:var(--c-brand);stroke-width:1.6}
 .cameo .accent-fin{fill:none;stroke:var(--c-brand);stroke-width:1.2;stroke-linecap:round}
 
@@ -305,7 +301,7 @@ section[id]{scroll-margin-top:86px}
   .vt-entete{grid-template-columns:1fr}
   .vt-index{display:none}
   .cameo{display:none}
-  .rail-mot{font-size:.62rem;letter-spacing:.1em}
+  .rail-etape{font-size:.62rem;letter-spacing:.1em}
   .vt-pied-haut{grid-template-columns:1fr 1fr;gap:30px;padding:38px 0 30px}
   .vt-marque{grid-column:1/-1}
   .vt-section{padding:54px 0}
@@ -434,14 +430,10 @@ section[id]{scroll-margin-top:86px}
 <div class="rail-scene">
 <span class="rail-voie"></span>
 <span class="rail-conteneur"></span>
-<span class="rail-point" style="left:6%"></span>
-<span class="rail-point" style="left:34%"></span>
-<span class="rail-point" style="left:63%"></span>
-<span class="rail-point" style="left:92%"></span>
-<span class="rail-mot" style="left:6%">Port</span>
-<span class="rail-mot" style="left:34%">Douane</span>
-<span class="rail-mot" style="left:63%">Droits</span>
-<span class="rail-mot" style="left:92%">Livraison</span>
+<span class="rail-etape" style="--x:6%;--d:0s"><i class="rail-point"></i>Port</span>
+<span class="rail-etape" style="--x:34%;--d:2.4s"><i class="rail-point"></i>Douane</span>
+<span class="rail-etape" style="--x:63%;--d:4.8s"><i class="rail-point"></i>Droits</span>
+<span class="rail-etape" style="--x:92%;--d:7.2s"><i class="rail-point"></i>Livraison</span>
 </div>
 </div>
 
@@ -697,19 +689,18 @@ section[id]{scroll-margin-top:86px}
 <p class="vt-intro" data-r>Vous démarrez avec l’équipe, pas avec un mode d’emploi.</p>
 </div>
 <div class="cameo" data-r aria-hidden="true">
-<svg viewBox="0 0 220 150" role="presentation" focusable="false">
-<line class="sol" x1="6" y1="132" x2="214" y2="132"/>
-<rect class="porte" x="136" y="66" width="52" height="20" rx="3"/>
-<rect class="trait" x="120" y="90" width="82" height="36" rx="4"/>
-<line class="trait" x1="134" y1="90" x2="134" y2="126"/>
-<line class="trait" x1="188" y1="90" x2="188" y2="126"/>
-<circle class="trait" cx="58" cy="50" r="11"/>
-<path class="trait" d="M58 61 V100"/>
-<path class="trait" d="M58 100 L48 125 M58 100 L68 125"/>
-<path class="trait" d="M58 72 L42 90"/>
-<path class="trait" d="M58 74 L77 82"/>
-<rect class="accent" x="76" y="75" width="19" height="23" rx="2"/>
-<path class="accent-fin" d="M81 83 H90 M81 88 H87"/>
+<svg viewBox="0 0 200 120" role="presentation" focusable="false">
+<line class="sol" x1="8" y1="104" x2="192" y2="104"/>
+<rect class="trait" x="110" y="72" width="72" height="32" rx="3"/>
+<line class="trait" x1="128" y1="72" x2="128" y2="104"/>
+<line class="trait" x1="164" y1="72" x2="164" y2="104"/>
+<circle class="trait" cx="62" cy="38" r="9"/>
+<path class="trait" d="M62 47 V74"/>
+<path class="trait" d="M62 74 L53 103 M62 74 L71 103"/>
+<path class="trait" d="M62 56 L48 70"/>
+<path class="trait" d="M62 57 L78 66"/>
+<rect class="accent" x="76" y="60" width="16" height="20" rx="2"/>
+<path class="accent-fin" d="M80 67 H88 M80 72 H86"/>
 </svg>
 </div>
 </div>
@@ -885,7 +876,10 @@ section[id]{scroll-margin-top:86px}
     var jalons = carteJalons.querySelectorAll('li');
     var carteEtape = document.getElementById('carteEtape');
     var carteJauge = document.getElementById('carteJauge');
-    var courant = 5;
+    var depart = Math.max(0, [].findIndex.call(jalons, function (li) {
+      return li.classList.contains('actuel');
+    }));
+    var courant = depart;
 
     var carteDessiner = function (i) {
       jalons.forEach(function (li, k) {
@@ -900,7 +894,7 @@ section[id]{scroll-margin-top:86px}
       if (courant >= jalons.length - 1) {
         carteJalons.classList.add('retour');
         setTimeout(function () {
-          courant = 5;
+          courant = depart;
           carteDessiner(courant);
           carteJalons.classList.remove('retour');
         }, 260);
