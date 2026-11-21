@@ -108,7 +108,6 @@ section[id]{scroll-margin-top:86px}
 .vt-c h3{margin:0 0 8px;font-size:1.06rem;letter-spacing:-.015em}
 .vt-c p{margin:0;color:var(--c-ink-2);line-height:1.58;font-size:.95rem}
 .vt-n{display:block;font-size:.7rem;font-weight:600;letter-spacing:.16em;color:var(--c-brand);margin-bottom:16px}
-.vt-fantome{position:absolute;top:14px;right:20px;font-size:3.4rem;font-weight:700;letter-spacing:-.05em;line-height:1;color:var(--c-line-fort);opacity:.5}
 
 /* Parcours */
 .pc{display:grid;grid-template-columns:.86fr 1.14fr;gap:60px;align-items:start}
@@ -273,7 +272,7 @@ section[id]{scroll-margin-top:86px}
 <span class="ln"><span style="--i:1"><em>jalon après jalon</em>,</span></span>
 <span class="ln"><span style="--i:2">jusqu’à la livraison.</span></span>
 </h1>
-<p class="vt-lead" data-r style="--d:4">Jalon aide les transitaires à piloter leurs dossiers d’import, à voir arriver la surestarie avant qu’elle coûte de l’argent, et à tenir leurs clients informés sans passer la journée au téléphone.</p>
+<p class="vt-lead" data-r style="--d:4">Jalon réunit vos dossiers d’import, vos conteneurs, votre facturation et vos clients dans une seule interface, et donne à chaque importateur un suivi clair, sans appel.</p>
 <div class="vt-actions" data-r style="--d:5">
 <x-bouton :href="route('inscription')">Je suis transitaire solo</x-bouton>
 <x-bouton :href="route('inscription', ['vous' => 'agence'])" variante="encre">Je dirige une agence</x-bouton>
@@ -312,19 +311,19 @@ section[id]{scroll-margin-top:86px}
 @endfor
 </div></div>
 
-<section class="vt vt-section" id="probleme">
+<section class="vt vt-section" id="solution">
 <div class="vt-entete">
 <div>
-<p class="vt-eyebrow" data-r>Le constat</p>
-<h2 data-r>Aujourd’hui, le suivi se fait à la main.</h2>
-<p class="vt-intro" data-r>Les outils officiels gèrent la procédure. Autour, il reste le pilotage de l’agence et la relation avec le client.</p>
+<p class="vt-eyebrow" data-r>La solution</p>
+<h2 data-r>Un seul endroit pour piloter chaque dossier.</h2>
+<p class="vt-intro" data-r>Jalon réunit le pilotage de l’agence et la relation client dans une interface unique, pensée pour le transit au Port de Lomé.</p>
 </div>
 <span class="vt-index">01 / 07</span>
 </div>
 <div class="vt-grille">
-<article class="vt-c" data-r><span class="vt-fantome">01</span><h3>Des infos éparpillées</h3><p>WhatsApp, appels, Excel, papier : documents perdus, étapes oubliées, personne ne sait où en est le dossier.</p></article>
-<article class="vt-c" data-r style="--d:1"><span class="vt-fantome">02</span><h3>Une surestarie sans préavis</h3><p>Quand le délai gratuit au port est dépassé, chaque jour coûte. Trop souvent, l’échéance est vue trop tard.</p></article>
-<article class="vt-c" data-r style="--d:2"><span class="vt-fantome">03</span><h3>Un client dans le flou</h3><p>L’importateur rappelle pour savoir où en est sa marchandise, et le transitaire répond au lieu d’avancer.</p></article>
+<article class="vt-c" data-r><span class="vt-n">Pilotage</span><h3>Tout au même endroit</h3><p>Dossiers, pièces justificatives, conteneurs, coûts et factures vivent dans la même fiche, à jour à chaque étape.</p></article>
+<article class="vt-c" data-r style="--d:1"><span class="vt-n">Franchise</span><h3>La date limite toujours connue</h3><p>La fin de franchise est calculée pour chaque conteneur et rappelée à J-2, J-1 et J0, dans l’application.</p></article>
+<article class="vt-c" data-r style="--d:2"><span class="vt-n">Relation client</span><h3>Le client suit tout seul</h3><p>Un code de suivi ou un portail en lecture seule : l’importateur voit l’avancement et ses documents, sans appeler.</p></article>
 </div>
 </section>
 
@@ -373,8 +372,8 @@ section[id]{scroll-margin-top:86px}
         ['fiche-dossier','Dossiers','Tout le dossier sur une seule fiche','Marge estimée et réelle, état de la facturation, documents validés, alerte de franchise et les 9 jalons du processus douanier.',['Passage au jalon suivant en un clic','Onglets Documents, Conteneurs, Coûts, Facture, Historique, Alertes']],
         ['passage-de-jalon-modale','Dossiers','Chaque étape validée, datée et commentée','Un jalon ne se franchit que si sa condition est remplie. La date et le commentaire restent dans l’historique du dossier.',['Condition de passage affichée avant de valider','Aucune étape sautée']],
         ['conteneurs','Conteneurs','Vos conteneurs et leurs échéances','Au port, sortis ou restitués : filtrez la liste et voyez d’un regard la fin de franchise et l’alerte associée.',['Alerte J0, J-1 ou J-2 sur chaque ligne','Recherche par numéro, dossier ou client']],
-        ['alertes','Alertes','Prévenu avant que les pénalités commencent','Franchise, document manquant, facture à échéance, arrivée proche : toutes vos alertes, classées par gravité.',['Filtres Toutes, Non lues, Critiques','Ouvrir le dossier concerné ou marquer comme lue']],
-        ['facturation','Facturation','Facturez et suivez ce qu’on vous doit','Les factures de chaque dossier avec leur état, le total, ce qui est déjà réglé et le reste à payer.',['États Émise, Partiellement payée, Payée','Marge du dossier sous les yeux','Version PDF de la facture']],
+        ['alertes','Alertes','Chaque échéance annoncée à l’avance','Franchise, document à fournir, facture à échéance, arrivée proche : toutes vos alertes, classées par priorité.',['Filtres Toutes, Non lues, Critiques','Ouvrir le dossier concerné ou marquer comme lue']],
+        ['facturation','Facturation','Facturez et suivez chaque règlement','Les factures de chaque dossier avec leur état, le total, les acomptes reçus et le solde à venir.',['États Émise, Partiellement payée, Payée','Marge du dossier sous les yeux','Version PDF de la facture']],
     ];
     $mobiles = [
         ['espace-client-mobile','Portail client','Tous ses dossiers, leur progression et leur alerte, en lecture seule.'],
@@ -488,7 +487,7 @@ section[id]{scroll-margin-top:86px}
 </div>
 </div>
 <div class="fq" data-r>
-<details><summary>Jalon remplace-t-il GUCE ou SEGUCE ?</summary><p>Non. Ces outils restent nécessaires pour les démarches officielles. Jalon sert à piloter vos dossiers, vos équipes, vos coûts et la relation avec vos clients.</p></details>
+<details><summary>Jalon remplace-t-il GUCE ou SEGUCE ?</summary><p>Il les complète. GUCE, SEGUCE et SYDONIA restent indispensables pour les démarches officielles ; Jalon prend en charge ce qui les entoure : vos dossiers, vos équipes, vos coûts et la relation avec vos clients.</p></details>
 <details><summary>Mon client a-t-il besoin d’un compte ?</summary><p>Non. Il peut suivre son dossier avec un simple code de suivi. Vous pouvez aussi lui ouvrir un portail en lecture seule.</p></details>
 <details><summary>Quelle différence entre solo et agence ?</summary><p>Le transitaire solo crée son espace lui-même et travaille seul. L’agence envoie une demande, nous la contactons, puis Jalon est installé pour elle avec son équipe et ses rôles.</p></details>
 <details><summary>Où sont stockés mes documents ?</summary><p>Dans un espace privé du serveur, jamais accessible par un lien public. L’accès est contrôlé selon vos droits.</p></details>
