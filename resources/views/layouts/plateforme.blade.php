@@ -16,6 +16,7 @@
         })();
     </script>
     @vite(['resources/css/global.css', 'resources/css/plateforme.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="{{ asset('css/ui-animations.css') }}">
 </head>
 <body class="console-page min-h-screen bg-page text-ink">
     <header class="console-barre">
@@ -34,7 +35,11 @@
                 </div>
 
                 <div class="console-utilisateur">
-                    <span class="console-avatar">{{ auth()->user()->initiales }}</span>
+                    @if (auth()->user()->photo_path)
+                        <img src="{{ auth()->user()->urlPhoto() }}" alt="" class="console-avatar console-avatar--photo">
+                    @else
+                        <span class="console-avatar">{{ auth()->user()->initiales }}</span>
+                    @endif
                     <div class="min-w-0">
                         <p class="nom truncate">{{ auth()->user()->nom }}</p>
                         <p class="role truncate">Super administrateur</p>
@@ -60,5 +65,6 @@
     </main>
 
     <x-toasts />
+    <script src="{{ asset('js/ui-animations.js') }}" defer></script>
 </body>
 </html>

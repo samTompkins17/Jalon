@@ -358,6 +358,11 @@
     color: var(--c-muted);
 }
 
+.console-avatar--photo {
+    display: block;
+    object-fit: cover;
+}
+
 .console-avatar {
     display: grid;
     flex: none;

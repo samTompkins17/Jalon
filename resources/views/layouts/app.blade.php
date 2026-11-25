@@ -20,6 +20,7 @@
     </script>
 
     @vite(['resources/css/global.css', 'resources/css/agence.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="{{ asset('css/ui-animations.css') }}">
 </head>
 <body>
     @php
@@ -102,7 +103,11 @@
 
             <div class="sidebar-pied">
                 <a href="{{ route('profil.edit') }}" class="sidebar-utilisateur">
-                    <span class="avatar">{{ $utilisateur?->initiales }}</span>
+                    @if ($utilisateur?->photo_path)
+                        <img src="{{ $utilisateur->urlPhoto() }}" alt="" class="avatar avatar--photo">
+                    @else
+                        <span class="avatar">{{ $utilisateur?->initiales }}</span>
+                    @endif
                     <div class="min-w-0">
                         <p class="nom truncate">{{ $utilisateur?->nom }}</p>
                         <p class="role truncate">{{ $utilisateur?->poste ?: $utilisateur?->role_label }}</p>
@@ -173,5 +178,6 @@
     <x-toasts />
 
     @stack('scripts')
+    <script src="{{ asset('js/ui-animations.js') }}" defer></script>
 </body>
 </html>

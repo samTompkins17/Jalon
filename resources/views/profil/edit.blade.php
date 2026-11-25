@@ -8,7 +8,7 @@
         <x-carte titre="Informations générales" divise>
             <div class="flex items-center gap-4 mb-7">
                 @if ($utilisateur->photo_path)
-                    <img src="{{ IlluminateSupportFacadesStorage::url($utilisateur->photo_path) }}" alt="" class="avatar" style="object-fit: cover;">
+                    <img src="{{ $utilisateur->urlPhoto() }}" alt="Votre photo de profil" class="avatar avatar--photo" style="width:56px;height:56px">
                 @else
                     <span class="avatar" style="width:56px;height:56px;font-size:16px">{{ $utilisateur->initiales }}</span>
                 @endif

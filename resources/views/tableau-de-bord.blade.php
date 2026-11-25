@@ -19,7 +19,7 @@
     <div class="grid gap-5">
 
         {{-- Période ------------------------------------------------------- --}}
-        <div class="segmented w-fit" role="group" aria-label="Période analysée">
+        <div class="segmented w-fit" role="group" aria-label="Période analysée" data-anim="arrive">
             @foreach (['jour' => 'Jour', 'semaine' => 'Semaine', 'mois' => 'Mois', 'trimestre' => 'Trimestre'] as $cle => $libelle)
                 <a
                     href="{{ route('tableau-de-bord', ['periode' => $cle]) }}"
@@ -29,12 +29,12 @@
         </div>
 
         {{-- Chiffre d'affaires -------------------------------------------- --}}
-        <div class="carte-ca">
+        <div class="carte-ca" data-anim="arrive" data-tilt>
             <div>
                 <p class="etiquette" style="color: var(--c-ink-2)">Chiffre d'affaires {{ $libellePeriode }}</p>
 
                 <div class="montant-ca">
-                    {{ \App\Support\Format::nombre($caPeriode) }}
+                    <x-anim.counter :value="\App\Support\Format::nombre($caPeriode)" />
                     <span class="devise">FCFA</span>
                 </div>
 
@@ -50,11 +50,44 @@
                 @endif
             </div>
 
+            @php
+                $caMaxi = max($barresCa12) ?: 1;
+            @endphp
             <div class="mini-barres" aria-hidden="true">
-                @for ($i = 0; $i < 12; $i++)
-                    <span @class(['mini-barre', 'actuelle' => $i === 11])></span>
-                @endfor
+                @foreach ($barresCa12 as $i => $caMois)
+                    <span
+                        @class(['mini-barre', 'actuelle' => $i === count($barresCa12) - 1])
+                        style="height: {{ max(8, (int) round($caMois / $caMaxi * 100)) }}%"
+                        title="{{ \App\Support\Format::fcfa($caMois) }}"
+                    ></span>
+                @endforeach
             </div>
+        </div>
+
+        {{-- Indicateurs clés ----------------------------------------------- --}}
+        @php
+            $kpis = [
+                ['libelle' => 'Dossiers en cours', 'valeur' => $statsKpi['dossiers'], 'route' => 'dossiers.index', 'alerte' => false],
+                ['libelle' => 'Conteneurs au port', 'valeur' => $statsKpi['conteneurs'], 'route' => 'conteneurs.index', 'alerte' => false],
+                ['libelle' => 'Franchise échue ou J0', 'valeur' => $statsKpi['franchises'], 'route' => 'alertes.index', 'alerte' => true],
+                ['libelle' => 'Factures à encaisser', 'valeur' => $statsKpi['factures'], 'route' => 'facturation.index', 'alerte' => false],
+            ];
+        @endphp
+        <div class="grille-stats">
+            @foreach ($kpis as $i => $kpi)
+                <a
+                    href="{{ route($kpi['route']) }}"
+                    class="stat"
+                    data-anim="arrive"
+                    data-index="{{ $i }}"
+                >
+                    <span class="etiquette">{{ $kpi['libelle'] }}</span>
+                    <p
+                        class="valeur"
+                        @if ($kpi['alerte'] && $kpi['valeur'] > 0) style="color: var(--c-rose)" @endif
+                    ><x-anim.counter :value="$kpi['valeur']" /></p>
+                </a>
+            @endforeach
         </div>
 
         {{-- Graphiques ---------------------------------------------------- --}}
@@ -63,13 +96,15 @@
                 etiquette="Volume d'activité"
                 titre="Évolution des dossiers"
                 :sous-titre="'Dossiers ouverts par mois (' . mb_strtolower($labelsMois[0]) . ' – ' . mb_strtolower(end($labelsMois)) . ')'"
+                data-anim="arrive"
+                data-tilt
             >
                 <div class="graphique">
                     <canvas id="graphique-dossiers" data-graphique aria-label="Nombre de dossiers ouverts par mois" role="img"></canvas>
                 </div>
             </x-carte>
 
-            <x-carte etiquette="Rentabilité" titre="Chiffre d'affaires et marge" sous-titre="En millions de FCFA">
+            <x-carte etiquette="Rentabilité" titre="Chiffre d'affaires et marge" sous-titre="En millions de FCFA" data-anim="arrive" data-tilt>
                 <x-slot:actions>
                     <div class="flex items-center gap-4">
                         <span class="legende"><span class="pastille" style="background: var(--c-brand)"></span>CA</span>
@@ -85,7 +120,7 @@
 
         {{-- Échéances et alertes ------------------------------------------ --}}
         <div class="grid gap-5 lg:grid-cols-2">
-            <x-carte etiquette="Calendrier opérationnel" titre="Prochaines échéances">
+            <x-carte etiquette="Calendrier opérationnel" titre="Prochaines échéances" data-anim="arrive" data-tilt>
                 @forelse ($echeances as $conteneur)
                     @php
                         $jours = $conteneur->jours_restants;
@@ -131,7 +166,7 @@
                 @endif
             </x-carte>
 
-            <x-carte etiquette="Surveillance douane" titre="Alertes importantes">
+            <x-carte etiquette="Surveillance douane" titre="Alertes importantes" data-anim="arrive" data-tilt>
                 <x-slot:actions>
                     <a href="{{ route('alertes.index') }}" class="lien-action">Voir toutes les alertes</a>
                 </x-slot:actions>
@@ -160,7 +195,7 @@
 
         {{-- Dossiers récents et journal ----------------------------------- --}}
         <div class="grid gap-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
-            <x-carte etiquette="Suivi des opérations" titre="Derniers dossiers créés ou modifiés">
+            <x-carte etiquette="Suivi des opérations" titre="Derniers dossiers créés ou modifiés" data-anim="arrive" data-tilt>
                 <div class="tableau-scroll">
 <table class="tableau">
                     <thead>
@@ -203,7 +238,7 @@
 </div>
             </x-carte>
 
-            <x-carte etiquette="Journal de bord" titre="Activités récentes">
+            <x-carte etiquette="Journal de bord" titre="Activités récentes" data-anim="arrive" data-tilt>
                 @forelse ($journal as $entree)
                     <div class="journal-item">
                         <p>

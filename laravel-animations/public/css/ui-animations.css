@@ -1,0 +1,88 @@
+/* ==========================================================
+   ui-animations.css — kit d'animations (Laravel / Blade)
+   Utilisation : <link rel="stylesheet" href="{{ asset('css/ui-animations.css') }}">
+   ========================================================== */
+:root{
+  --anim-ease: cubic-bezier(.16,1,.3,1);      /* easeOutExpo */
+  --anim-bounce: cubic-bezier(.34,1.4,.5,1);  /* rebond léger */
+  --anim-accent: #8b6cf0;
+  --anim-accent-2: #d9c9ff;
+}
+
+/* 1. ARRIVÉE DOUCE : opacité + rotateX + flou, décalée (stagger) */
+.anim-scene{ perspective: 1200px; }
+[data-anim="arrive"]{
+  opacity: 0;
+  transform: perspective(1000px) rotateX(18deg) translateY(24px);
+  transform-origin: 50% 100%;
+  filter: blur(18px);
+  will-change: transform, opacity, filter;
+}
+[data-anim="arrive"].is-in{
+  opacity: 1; transform: none; filter: blur(0);
+  transition: opacity 1150ms var(--anim-ease), transform 1150ms var(--anim-ease), filter 1150ms var(--anim-ease);
+  transition-delay: calc(var(--i, 0) * 55ms);
+}
+
+/* 2. OBJET 3D : inclinaison au survol + flottement */
+[data-tilt]{ transform-style: preserve-3d; transition: transform .25s ease-out; will-change: transform; }
+.anim-float{ animation: anim-float 5s ease-in-out infinite; }
+@keyframes anim-float{ 0%,100%{ translate: 0 0 } 50%{ translate: 0 -8px } }
+.anim-orb{
+  width: 96px; aspect-ratio: 1; border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 28%, #fff 0 8%, transparent 22%),
+    radial-gradient(circle at 70% 78%, rgba(255,160,220,.7), transparent 45%),
+    radial-gradient(circle at 50% 50%, #b9a2ff, #7a5bea 70%);
+  box-shadow: inset -8px -10px 24px rgba(60,20,140,.35), 0 18px 30px -12px rgba(122,91,234,.6);
+}
+
+/* 3. COMPTEUR : bandes de chiffres 0-9 qui défilent */
+.rolling{ display: inline-flex; font-variant-numeric: tabular-nums; line-height: 1; }
+.rolling__digit{ display: inline-block; height: 1em; overflow: hidden; }
+.rolling__strip{
+  display: flex; flex-direction: column; transform: translateY(0);
+  transition: transform 1600ms var(--anim-ease);
+  transition-delay: calc(var(--d, 0) * 90ms);
+}
+.rolling__strip span{ height: 1em; display: block; }
+.rolling__static{ display: inline-block; }
+
+/* 4. BARRES : scaleY depuis la base */
+[data-bars] .bar{
+  transform-origin: bottom; transform: scaleY(0);
+  transition: transform 1100ms var(--anim-ease); transition-delay: calc(var(--i, 0) * 30ms);
+}
+[data-bars].is-in .bar{ transform: scaleY(1); }
+
+/* 5. FAVORIS : filtre qui estompe les cartes */
+[data-filter-card]{ transition: opacity .4s ease, filter .4s ease, transform .4s var(--anim-ease); }
+[data-filter-card].is-dim{ opacity: .25; filter: blur(2px) saturate(.6); transform: scale(.97); }
+
+/* 6. ANNEAU DE PROGRESSION : stroke-dashoffset */
+.ring{ position: relative; display: inline-grid; place-items: center; }
+.ring svg{ transform: rotate(-90deg); }
+.ring__track{ stroke: #ece8f7; }
+.ring__bar{
+  stroke: var(--anim-accent); stroke-linecap: round;
+  transition: stroke-dashoffset 1900ms cubic-bezier(.3,0,.1,1);
+}
+.ring__label{ position: absolute; font-weight: 700; }
+
+/* 7. NAVIGATION : pastille élastique */
+.rail{ position: relative; display: flex; flex-direction: column; gap: 6px; }
+.rail a{ position: relative; z-index: 1; padding: 10px 14px; border-radius: 12px; color: #444; text-decoration: none; transition: color .3s; }
+.rail a.is-active{ color: #fff; }
+.rail-pill{
+  position: absolute; top: 0; left: 0; width: 100%; z-index: 0; border-radius: 12px;
+  background: var(--anim-accent);
+  /* height change instantanément : seul transform (compositeur) est animé. */
+  transition: transform .6s var(--anim-bounce);
+}
+
+@media (prefers-reduced-motion: reduce){
+  [data-anim="arrive"]{ opacity:1; transform:none; filter:none; }
+  [data-anim="arrive"].is-in, .rolling__strip, [data-bars] .bar, .ring__bar, .rail-pill{ transition: none !important; }
+  [data-bars] .bar{ transform: none; }
+  .anim-float{ animation: none; }
+}

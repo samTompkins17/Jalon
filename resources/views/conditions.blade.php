@@ -15,7 +15,7 @@ body{margin:0;background:var(--c-page);color:var(--c-ink)}
 .cd-nav a:not(.btn){color:var(--c-ink-2);text-decoration:none;font-weight:500}
 .cd-nav a:not(.btn):hover{color:var(--c-brand)}
 .cd-main{padding:56px 0 72px}
-.cd-eyebrow{color:var(--c-brand);font-weight:600;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 12px}
+.cd-eyebrow{color:var(--c-brand-texte);font-weight:600;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;margin:0 0 12px}
 .cd h1{font-size:clamp(2rem,5vw,3rem);letter-spacing:-.03em;line-height:1.08;margin:0 0 14px}
 .cd-lead{color:var(--c-ink-2);font-size:1.08rem;line-height:1.6;margin:0 0 8px;max-width:60ch}
 .cd-date{color:var(--c-muted);font-size:.9rem;margin:0 0 40px}
@@ -33,16 +33,21 @@ body{margin:0;background:var(--c-page);color:var(--c-ink)}
 </style>
 </head>
 <body>
+@php
+    // Aucun mailto n'est généré vers une adresse non configurée.
+    $contactEmail = trim((string) config('app.contact_email'));
+@endphp
 <div class="cd-barre"><div class="cd"><div class="cd-nav">
 <a href="{{ url('/') }}" aria-label="Jalon, accueil"><x-logo :hauteur="30" /></a>
 <nav class="vt-liens" aria-label="Navigation">
-<a href="{{ url('/') }}#fonctions">Fonctions</a>
+<a href="{{ url('/') }}#solution">Fonctions</a>
 <a href="{{ route('connexion') }}">Connexion</a>
 <x-bouton :href="route('inscription')" taille="petit">Créer mon espace</x-bouton>
 </nav>
 </div></div></div>
 
 <main class="cd cd-main">
+<!-- À FAIRE RELIRE PAR UN JURISTE AVANT PUBLICATION. -->
 <p class="cd-eyebrow">Mentions légales</p>
 <h1>Conditions d’utilisation</h1>
 <p class="cd-lead">Jalon est un logiciel propriétaire de suivi des dossiers de transit et de dédouanement, édité à Lomé (Togo). L’accès au service vaut acceptation des présentes conditions.</p>
@@ -82,7 +87,11 @@ body{margin:0;background:var(--c-page);color:var(--c-ink)}
 <p>Les présentes conditions sont soumises au droit togolais. Tout litige relève des juridictions compétentes de Lomé, sauf disposition impérative contraire.</p>
 
 <h2>8. Contact</h2>
-<p>Pour toute question relative à ces conditions : <a href="mailto:contact@jalon.tg">contact@jalon.tg</a>.</p>
+@if ($contactEmail !== '')
+<p>Pour toute question relative à ces conditions : <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>.</p>
+@else
+<p>Pour toute question relative à ces conditions, écrivez-nous depuis le site.</p>
+@endif
 </div>
 </main>
 

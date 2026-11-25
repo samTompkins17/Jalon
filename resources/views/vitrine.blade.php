@@ -3,8 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jalon · Le suivi des dossiers de transit, du premier document à la livraison</title>
-<meta name="description" content="Jalon réunit dossiers, conteneurs, documents et factures dans une seule application, pensée pour les transitaires du Port de Lomé. Chaque jalon daté, chaque client informé.">
+@php
+    $titre = 'Jalon · Le suivi des dossiers de transit, du premier document à la livraison';
+    $description = 'Jalon réunit dossiers, conteneurs, documents et factures dans une seule application, pensée pour les transitaires du Port de Lomé. Chaque jalon daté, chaque client informé.';
+@endphp
+<title>{{ $titre }}</title>
+<meta name="description" content="{{ $description }}">
+<link rel="canonical" href="{{ url('/') }}">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Jalon">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="{{ $titre }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:url" content="{{ url('/') }}">
+<meta property="og:image" content="{{ asset('img/og-jalon.png') }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Interface Jalon : les neuf jalons d’un dossier de transit">
+<meta name="twitter:card" content="summary_large_image">
 <script>
 document.documentElement.classList.add('js');
 </script>
@@ -17,20 +35,22 @@ html{scroll-behavior:smooth}
 body{margin:0;background:var(--c-page);color:var(--c-ink);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 .vt{max-width:1180px;margin:0 auto;padding:0 24px}
 .vt a{text-underline-offset:3px}
+.saut{position:absolute;left:12px;top:-64px;z-index:60;display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:0 0 12px 12px;background:var(--c-ink);color:var(--c-page);font-size:.92rem;font-weight:600;text-decoration:none}
+.saut:focus{top:0}
 section[id]{scroll-margin-top:86px}
 :root{--ease:cubic-bezier(.2,.7,.1,1);--vt-hair:1px solid var(--c-line)}
 
-.js [data-r]{opacity:0;transform:translateY(18px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:calc(var(--d,0)*80ms)}
+.js [data-r]{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease),transform .6s var(--ease);transition-delay:calc(var(--d,0)*80ms)}
 .js [data-r].vu{opacity:1;transform:none}
 @keyframes monte{from{transform:translateY(105%)}to{transform:none}}
 @keyframes fondu{from{opacity:0}to{opacity:1}}
 @keyframes derive{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(-26px,18px,0)}}
-@keyframes defile{to{transform:translateX(-50%)}}
 .ln{display:block;overflow:hidden;padding-bottom:.06em}
-.ln>span{display:block;transform:translateY(105%);animation:monte 1s var(--ease) forwards;animation-delay:calc(var(--i,0)*110ms + 120ms)}
+.ln>span{display:block;transform:translateY(105%);animation:monte .8s var(--ease) forwards;animation-delay:calc(var(--i,0)*110ms + 120ms)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
-  .js [data-r]{opacity:1;transform:none}.ln>span{transform:none}.vt-piste{width:auto;flex-wrap:wrap;animation:none}
+  html{scroll-behavior:auto}
+  .js [data-r]{opacity:1;transform:none}.ln>span{transform:none}
 }
 
 /* ---------- Navigation ---------- */
@@ -38,21 +58,34 @@ section[id]{scroll-margin-top:86px}
 .vt-barre.defile{border-bottom-color:var(--c-line);background:color-mix(in srgb,var(--c-page) 95%,transparent)}
 .vt-nav{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:28px;padding:15px 0}
 .vt-liens{display:flex;align-items:center;justify-content:center;gap:28px}
-.vt-liens a{position:relative;color:var(--c-ink-2);text-decoration:none;font-size:.93rem;font-weight:500;padding:4px 0}
-.vt-liens a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:1px;background:var(--c-brand);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+.vt-liens a{position:relative;display:inline-flex;align-items:center;min-height:44px;color:var(--c-ink-2);text-decoration:none;font-size:.93rem;font-weight:500}
+.vt-liens a::after{content:"";position:absolute;left:0;right:0;bottom:11px;height:1px;background:var(--c-brand);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
 .vt-liens a:hover{color:var(--c-ink)}
 .vt-liens a:hover::after{transform:scaleX(1)}
 .vt-nav-actions{display:flex;align-items:center;gap:16px}
-.vt-nav-actions a:not(.btn){color:var(--c-ink-2);text-decoration:none;font-size:.93rem;font-weight:500}
+.vt-nav-actions a:not(.btn){display:inline-flex;align-items:center;min-height:44px;color:var(--c-ink-2);text-decoration:none;font-size:.93rem;font-weight:500}
 .vt-nav-actions a:not(.btn):hover{color:var(--c-brand)}
+/* Menu mobile : mêmes ancres que la barre, dans un <details>. */
+.menu-mobile{display:none}
+.menu-mobile summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:1px solid var(--c-line);border-radius:999px;background:var(--c-surface);color:var(--c-ink);font-size:.92rem;font-weight:500;list-style:none;cursor:pointer}
+.menu-mobile summary::-webkit-details-marker{display:none}
+.menu-mobile summary::after{content:"+";color:var(--c-brand-texte);font-weight:700;line-height:1}
+.menu-mobile[open] summary::after{content:"–"}
+.menu-mobile nav{display:grid;padding:8px 0 4px}
+.menu-mobile nav a{display:flex;align-items:center;min-height:44px;padding:0 4px;border-top:var(--vt-hair);color:var(--c-ink-2);font-size:.95rem;font-weight:500;text-decoration:none}
+.menu-mobile nav a:first-child{border-top:0}
+.menu-mobile nav a:hover{color:var(--c-brand)}
+.vt-liens a:focus-visible,.vt-nav-actions a:not(.btn):focus-visible,.vt-col a:focus-visible,.vt-pied-bas a:focus-visible,.fq summary:focus-visible,.menu-mobile summary:focus-visible,.gx-ouvrir:focus-visible,.gx-mini:focus-visible,.ph-i:focus-visible,.lb-fermer:focus-visible{outline:2px solid var(--c-brand);outline-offset:3px;color:var(--c-brand)}
 
 /* ---------- Héro ---------- */
 .vt-hero{position:relative;display:grid;grid-template-columns:1.02fr .98fr;gap:60px;align-items:center;padding:72px 0 76px}
 .vt-halo{position:absolute;inset:-140px -8vw auto;height:620px;z-index:-1;pointer-events:none;overflow:hidden}
-.vt-halo i{position:absolute;display:block;border-radius:50%;filter:blur(90px);opacity:.5}
-.vt-halo i:first-child{width:520px;height:420px;right:4%;top:24px;background:color-mix(in srgb,var(--c-brand) 15%,transparent);animation:derive 22s ease-in-out infinite}
-.vt-halo i:last-child{width:360px;height:320px;left:2%;top:190px;background:color-mix(in srgb,var(--c-teal) 8%,transparent);animation:derive 26s ease-in-out infinite reverse}
-.vt-eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 20px;color:var(--c-muted);font-size:.71rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
+.vt-halo i{position:absolute;display:block;border-radius:50%;opacity:.5}
+/* Dégradé radial au lieu d'un filter: blur(90px) : le fondu est cuit dans le
+   fond, l'animation ne déplace que le calque (transform, compositeur). */
+.vt-halo i:first-child{width:520px;height:420px;right:4%;top:24px;background:radial-gradient(closest-side,color-mix(in srgb,var(--c-brand) 15%,transparent),transparent 75%);animation:derive 22s ease-in-out 2}
+.vt-halo i:last-child{width:360px;height:320px;left:2%;top:190px;background:radial-gradient(closest-side,color-mix(in srgb,var(--c-teal) 8%,transparent),transparent 75%);animation:derive 26s ease-in-out 2 reverse}
+.vt-eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 20px;color:var(--c-muted);font-size:.78rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
 .vt-eyebrow::before{content:"";width:20px;height:1px;background:var(--c-brand)}
 .vt h1{font-size:clamp(2.5rem,5.2vw,4.7rem);line-height:1;letter-spacing:-.045em;margin:0 0 22px;font-weight:700}
 .vt h1 em{font-style:normal;color:var(--c-brand)}
@@ -68,11 +101,11 @@ section[id]{scroll-margin-top:86px}
 .vt-aide{font-size:.85rem;color:var(--c-muted);margin:11px 0 0;max-width:44ch}
 
 /* Carte dossier */
-.vt-carte{position:relative;background:var(--c-surface);border:1px solid var(--c-line);border-radius:22px;padding:24px 24px 20px;box-shadow:var(--ombre-pose)}
+.vt-carte{position:relative;margin:0;background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-l);padding:24px 24px 20px;box-shadow:var(--ombre-pose)}
 .vt-carte-tete{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding-bottom:16px;border-bottom:var(--vt-hair)}
-.vt-carte-tete small{display:block;font-size:.67rem;letter-spacing:.16em;text-transform:uppercase;color:var(--c-muted);margin-bottom:6px}
+.vt-carte-tete small{display:block;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--c-muted);margin-bottom:6px}
 .vt-carte-tete strong{font-size:1.02rem;letter-spacing:-.01em}
-.vt-puce{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--c-rose-bg);color:var(--c-rose);font-size:.73rem;font-weight:600;white-space:nowrap}
+.vt-puce{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--c-rose-bg);color:var(--c-rose);font-size:.78rem;font-weight:600;white-space:nowrap}
 .vt-puce::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
 .vt-jalons{list-style:none;margin:14px 0 0;padding:0}
 .vt-jalons li{position:relative;display:flex;align-items:center;gap:12px;padding:7px 0;font-size:.88rem;color:var(--c-muted)}
@@ -84,7 +117,7 @@ section[id]{scroll-margin-top:86px}
 .vt-carte-pied{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-top:14px;border-top:var(--vt-hair);font-size:.79rem;color:var(--c-muted)}
 .vt-jauge{flex:1;height:3px;border-radius:3px;background:var(--c-surface-2);box-shadow:var(--ombre-creux);overflow:hidden}
 .vt-jauge i{display:block;height:100%;width:55%;background:var(--c-brand);border-radius:3px}
-.vt-note{font-size:.75rem;color:var(--c-muted);margin:11px 0 0}
+.vt-note{font-size:.78rem;color:var(--c-muted);margin:11px 0 0}
 
 /* ---------- Bandeau de réassurance ---------- */
 .vt-rassure{border-block:1px solid var(--c-line);padding:15px 0}
@@ -97,14 +130,16 @@ section[id]{scroll-margin-top:86px}
 .vt-entete{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;margin-bottom:38px}
 .vt-entete h2{font-size:clamp(1.85rem,3.3vw,2.8rem);line-height:1.06;letter-spacing:-.035em;margin:0 0 14px;max-width:24ch}
 .vt-intro{color:var(--c-muted);max-width:60ch;font-size:1.01rem;line-height:1.64;margin:0}
-.vt-index{font-size:.71rem;letter-spacing:.16em;color:var(--c-muted);white-space:nowrap;padding-bottom:6px}
+.vt-index{font-size:.78rem;letter-spacing:.16em;color:var(--c-muted);white-space:nowrap;padding-bottom:6px}
 .vt-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:16px}
 
-.vt-c{position:relative;background:var(--c-surface);border:1px solid var(--c-line);border-radius:16px;padding:26px;box-shadow:var(--ombre-fine);transition:box-shadow .3s,transform .4s var(--ease)}
+.vt-c{position:relative;background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-m);padding:26px;box-shadow:var(--ombre-fine);transition:box-shadow .3s,transform .4s var(--ease)}
+/* L'ombre portée reste animée au survol (paint, une seule fois, élément
+   petit) : la remplacer par drop-shadow() ombrerait aussi le texte. */
 .vt-c:hover{box-shadow:var(--ombre-relief);transform:translateY(-2px)}
 .vt-c h3{margin:0 0 8px;font-size:1.05rem;letter-spacing:-.015em}
 .vt-c p{margin:0;color:var(--c-ink-2);line-height:1.58;font-size:.94rem}
-.vt-n{display:block;font-size:.69rem;font-weight:600;letter-spacing:.16em;color:var(--c-brand);margin-bottom:14px}
+.vt-n{display:block;font-size:.78rem;font-weight:600;letter-spacing:.16em;color:var(--c-brand-texte);margin-bottom:14px}
 
 /* ---------- Une journée avec Jalon ---------- */
 .jour{display:grid;margin-top:4px}
@@ -112,11 +147,11 @@ section[id]{scroll-margin-top:86px}
 .jour article:last-child{border-bottom:var(--vt-hair)}
 .jour article:nth-child(even){grid-template-columns:.54fr .46fr}
 .jour article:nth-child(even) .jour-texte{order:2}
-.jour-heure{display:flex;align-items:center;gap:10px;font-size:.71rem;letter-spacing:.16em;text-transform:uppercase;color:var(--c-muted);margin:0 0 14px}
-.jour-heure b{color:var(--c-brand);font-weight:600}
+.jour-heure{display:flex;align-items:center;gap:10px;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--c-muted);margin:0 0 14px}
+.jour-heure b{color:var(--c-brand-texte);font-weight:600}
 .jour h3{margin:0 0 10px;font-size:clamp(1.24rem,2.2vw,1.7rem);letter-spacing:-.028em;line-height:1.15}
 .jour p{margin:0;color:var(--c-ink-2);line-height:1.6;font-size:.96rem;max-width:44ch}
-.jour-carte{background:var(--c-surface);border:1px solid var(--c-line);border-radius:16px;padding:18px 20px;box-shadow:var(--ombre-fine)}
+.jour-carte{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-m);padding:18px 20px;box-shadow:var(--ombre-fine)}
 .jour-carte .tete{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:12px;border-bottom:var(--vt-hair);font-size:.78rem;color:var(--c-muted)}
 .jour-carte .tete strong{color:var(--c-ink);font-size:.9rem;font-weight:600}
 .jour-lignes{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:9px;font-size:.86rem;color:var(--c-ink-2)}
@@ -131,20 +166,24 @@ section[id]{scroll-margin-top:86px}
 .gx{display:grid;grid-template-columns:1.12fr .88fr;gap:52px;align-items:start}
 .gx-visuel{position:sticky;top:92px}
 .gx-cadre{border:1px solid var(--c-line);border-radius:18px;background:var(--c-surface);overflow:hidden;box-shadow:var(--ombre-pose)}
+.sh-b{display:flex;align-items:center;gap:6px;padding:9px 14px;border-bottom:var(--vt-hair);background:var(--c-surface-2)}
+.sh-b i{width:9px;height:9px;border-radius:50%;background:var(--c-line-fort)}
 .gx-ouvrir{display:block;width:100%;padding:0;border:0;background:var(--c-surface-2);cursor:zoom-in}
 .gx-images{position:relative;display:block;aspect-ratio:16 / 11;background:var(--c-surface-2)}
 .gx-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;opacity:0;transition:opacity .45s var(--ease)}
 .gx-img.actif{opacity:1}
 .gx-pied{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 15px;border-top:var(--vt-hair);color:var(--c-muted);font-size:.78rem}
 .gx-compteur{font-variant-numeric:tabular-nums;letter-spacing:.1em}
-.gx-compteur b{color:var(--c-brand);font-weight:600}
+.gx-compteur b{color:var(--c-brand-texte);font-weight:600}
 .gx-texte{list-style:none;margin:0;padding:0}
-.gx-texte li{min-height:54vh;display:flex;flex-direction:column;justify-content:center;padding:20px 0;opacity:.32;transition:opacity .45s var(--ease)}
-.gx-texte li.actif{opacity:1}
+.gx-texte > li{min-height:54vh;display:flex;flex-direction:column;justify-content:center;padding:20px 0;opacity:.7;transition:opacity .45s var(--ease)}
+.gx-texte > li.actif{opacity:1}
+/* À .7, un gris clair passerait sous 4,5:1 : le texte inactif s'assombrit. */
+.gx-texte > li:not(.actif) p,.gx-texte > li:not(.actif) ul,.gx-texte > li:not(.actif) .vt-eyebrow{color:var(--c-ink)}
 .gx-texte h3{font-size:clamp(1.3rem,2.2vw,1.75rem);letter-spacing:-.028em;line-height:1.16;margin:0 0 12px}
 .gx-texte p{color:var(--c-ink-2);line-height:1.6;margin:0;font-size:.95rem}
 .gx-texte ul{margin:14px 0 0;padding:0;list-style:none;color:var(--c-muted);font-size:.88rem;line-height:1.6}
-.gx-texte li li{display:flex;gap:10px;padding:4px 0;min-height:0}
+.gx-texte li li{display:flex;gap:10px;padding:4px 0;min-height:0;opacity:1}
 .gx-texte li li::before{content:"";flex:none;width:5px;height:5px;margin-top:.55em;border-radius:50%;background:var(--c-brand);opacity:.65}
 .gx-mini{display:none}
 .ph{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:30px;align-items:start;margin-top:26px}
@@ -153,9 +192,12 @@ section[id]{scroll-margin-top:86px}
 .ph-i img{display:block;width:100%;height:auto}
 .ph figcaption{color:var(--c-muted);font-size:.86rem;line-height:1.55;max-width:30ch;margin:0 auto}
 .ph figcaption b{display:block;color:var(--c-ink);font-size:.93rem;margin-bottom:3px}
-.lb{position:fixed;inset:0;z-index:60;background:color-mix(in srgb,#000 84%,transparent);overflow:auto;padding:32px;cursor:zoom-out;animation:fondu .25s}
-.lb[hidden]{display:none}
-.lb img{display:block;max-width:min(1240px,100%);margin:0 auto;border-radius:12px;height:auto;box-shadow:var(--ombre-pose)}
+.lb{width:100%;max-width:100%;height:100%;max-height:100%;margin:0;padding:32px;border:0;background:transparent;overflow:auto;cursor:zoom-out}
+.lb::backdrop{background:rgba(20,17,14,.88)}
+.lb[open]{animation:fondu .25s}
+.lb img{display:block;max-width:min(1240px,100%);margin:0 auto;border-radius:12px;height:auto;box-shadow:var(--ombre-pose);cursor:default}
+.lb-fermer{position:fixed;top:16px;right:16px;z-index:1;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border:1px solid var(--c-line-fort);border-radius:999px;background:var(--c-surface);color:var(--c-ink);font:inherit;font-size:.9rem;font-weight:600;cursor:pointer}
+.lb-fermer:hover{background:var(--c-surface-2)}
 
 /* ---------- Prévu ---------- */
 .pv{display:flex;flex-wrap:wrap;gap:10px}
@@ -163,7 +205,7 @@ section[id]{scroll-margin-top:86px}
 
 /* ---------- Modules ---------- */
 .mod{display:grid;grid-template-columns:repeat(3,1fr);gap:38px}
-.mod-famille h3{margin:0 0 4px;font-size:.72rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--c-brand)}
+.mod-famille h3{margin:0 0 4px;font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--c-brand-texte)}
 .mod-famille > p{margin:0 0 14px;color:var(--c-muted);font-size:.86rem}
 .mod ul{list-style:none;margin:0;padding:0}
 .mod li{padding:15px 0;border-top:var(--vt-hair)}
@@ -171,7 +213,7 @@ section[id]{scroll-margin-top:86px}
 .mod span{display:block;color:var(--c-muted);font-size:.87rem;line-height:1.5}
 
 /* ---------- Sécurité ---------- */
-.secu{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;border-top:var(--vt-hair);padding-top:26px}
+.secu{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:22px;border-top:var(--vt-hair);padding-top:26px}
 .secu b{display:block;font-size:.93rem;margin-bottom:5px}
 .secu p{margin:0;color:var(--c-muted);font-size:.86rem;line-height:1.55}
 .secu-lien{margin:18px 0 0;font-size:.88rem}
@@ -186,21 +228,24 @@ section[id]{scroll-margin-top:86px}
 .offre li{display:flex;gap:10px}
 .offre li::before{content:"✓";color:var(--c-brand);font-weight:700;line-height:1.4}
 .offre .cta{margin-top:auto}
+.offre .cta-lien{margin:10px 0 0;font-size:.85rem}
+.offre .cta-lien a{color:var(--c-brand-texte);text-decoration:underline;text-underline-offset:2px}
 .offre-note{margin:16px 0 0;color:var(--c-muted);font-size:.85rem}
 
 /* ---------- Chiffres ---------- */
 .chiffres{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;border-top:var(--vt-hair);padding-top:26px}
 .chiffres strong{display:block;font-size:2rem;letter-spacing:-.045em;color:var(--c-brand);font-variant-numeric:tabular-nums;line-height:1}
 .chiffres span{display:block;margin-top:6px;color:var(--c-muted);font-size:.85rem}
+.mod + .chiffres{margin-top:44px}
 
 /* ---------- Pionniers ---------- */
 .pionniers{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;border-top:var(--vt-hair);padding-top:26px}
-.pionniers i{display:block;font-style:normal;font-size:.7rem;font-weight:600;letter-spacing:.16em;color:var(--c-brand);margin-bottom:9px}
+.pionniers i{display:block;font-style:normal;font-size:.78rem;font-weight:600;letter-spacing:.16em;color:var(--c-brand-texte);margin-bottom:9px}
 .pionniers b{display:block;font-size:.98rem;margin-bottom:6px}
 .pionniers p{margin:0;color:var(--c-muted);font-size:.88rem;line-height:1.55}
 
 /* ---------- Bandeau CTA ---------- */
-.bande-cta{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:24px 28px;border:1px solid var(--c-line);border-radius:16px;background:var(--c-surface);box-shadow:var(--ombre-fine);margin-top:44px}
+.bande-cta{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:24px 28px;border:1px solid var(--c-line);border-radius:var(--r-m);background:var(--c-surface);box-shadow:var(--ombre-fine);margin-top:44px}
 .bande-cta p{margin:0;font-weight:600;letter-spacing:-.015em}
 .bande-cta small{display:block;color:var(--c-muted);font-weight:400;font-size:.85rem;margin-top:3px}
 
@@ -215,40 +260,47 @@ section[id]{scroll-margin-top:86px}
 .fq p{color:var(--c-ink-2);line-height:1.62;max-width:74ch;margin:13px 0 0;font-size:.94rem}
 
 /* ---------- Vie discrète : carte du héro, rail, caméo ---------- */
-.vt-puce{animation:puceSouffle 5s ease-in-out infinite}
+.vt-puce{position:relative}
+/* Souffle sur un pseudo-élément : box-shadow est peint une fois dans le calque,
+   seuls opacity et transform (compositeur) varient à chaque image. */
+.vt-puce::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 6px var(--c-brand-soft);opacity:0;transform:scale(.92);pointer-events:none;animation:puceSouffle 5s ease-in-out 3}
 @keyframes puceSouffle{
-  0%,100%{box-shadow:0 0 0 0 var(--c-brand-soft)}
-  50%{box-shadow:0 0 0 6px transparent}
+  0%,100%{opacity:0;transform:scale(.92)}
+  50%{opacity:.85;transform:scale(1.04)}
 }
 .vt-jalons{transition:opacity .22s linear}
 .vt-jalons.retour{opacity:.4}
-.vt-jalons li.actuel::before{animation:jalonSouffle 3.2s ease-in-out infinite}
+.vt-jalons li.actuel::after{content:"";position:absolute;left:0;top:50%;width:13px;height:13px;margin-top:-6.5px;border-radius:50%;border:1.5px solid var(--c-brand);opacity:0;pointer-events:none;animation:jalonSouffle 3.2s ease-in-out 3}
 @keyframes jalonSouffle{
-  0%,100%{box-shadow:0 0 0 4px var(--c-brand-soft)}
-  50%{box-shadow:0 0 0 7px var(--c-brand-soft)}
+  0%{opacity:0;transform:scale(.6)}
+  30%{opacity:.75}
+  100%{opacity:0;transform:scale(1.9)}
 }
-.vt-jauge i{transition:width .7s var(--ease)}
+/* Echelle plutôt que width : scaleX ne touche pas la mise en page. */
+.vt-jauge i{display:block;height:100%;width:100%;background:var(--c-brand);border-radius:3px;transform:scaleX(.55);transform-origin:left center;transition:transform .7s var(--ease)}
 
 .rail{margin:0 0 10px;padding:22px 0 6px;border-top:var(--vt-hair)}
 .rail-scene{position:relative;height:64px}
 .rail-voie{position:absolute;left:0;right:0;top:22px;height:1px;background:var(--c-line)}
-.rail-etape{position:absolute;top:36px;left:var(--x);transform:translateX(-50%);color:var(--c-muted);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+/* La piste fait 100 % de la scène : son translateX en % vaut donc un % de la scène,
+   et le déplacement est intégralement confié au compositeur (aucun layout). */
+.rail-piste{position:absolute;top:22px;left:0;width:100%;height:0;animation:railTrajet 10s var(--ease) 3 both}
+.rail-etape{position:absolute;top:36px;left:var(--x);transform:translateX(-50%);color:var(--c-muted);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
 .rail-point{position:absolute;top:-14px;left:50%;width:9px;height:9px;border-radius:50%;background:var(--c-surface);border:1px solid var(--c-line-fort);transform:translate(-50%,-50%)}
-.rail-point::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--c-brand);opacity:0;animation:railPulse 10s linear infinite;animation-delay:var(--d,0s)}
+.rail-point::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--c-brand);opacity:0;animation:railPulse 10s linear 3;animation-delay:var(--d,0s)}
 @keyframes railPulse{
   0%{opacity:0;transform:scale(.6)}
   6%{opacity:.55;transform:scale(1)}
   22%{opacity:0;transform:scale(1.7)}
   100%{opacity:0;transform:scale(1.7)}
 }
-.rail-conteneur{position:absolute;top:22px;left:6%;width:46px;height:22px;border-radius:4px;background:var(--c-brand);box-shadow:var(--ombre-fine);transform:translate(-50%,-50%);animation:railTrajet 10s var(--ease) infinite}
+.rail-conteneur{position:absolute;top:-11px;left:0;width:46px;height:22px;border-radius:4px;background:var(--c-brand);box-shadow:var(--ombre-fine);transform:translateX(-50%)}
 .rail-conteneur::before{content:"";position:absolute;inset:4px 9px;border-left:2px solid rgba(255,255,255,.5);border-right:2px solid rgba(255,255,255,.5)}
 @keyframes railTrajet{
-  0%,8%{left:6%;opacity:1}
-  26%,34%{left:34%}
-  56%,64%{left:63%}
-  86%,92%{left:92%;opacity:1}
-  100%{left:92%;opacity:0}
+  0%,8%{transform:translateX(6%)}
+  26%,34%{transform:translateX(34%)}
+  56%,64%{transform:translateX(63%)}
+  86%,100%{transform:translateX(92%)}
 }
 
 .cameo{width:228px;max-width:40vw;color:var(--c-ink-2);opacity:.9}
@@ -259,8 +311,9 @@ section[id]{scroll-margin-top:86px}
 .cameo .accent-fin{fill:none;stroke:var(--c-brand);stroke-width:1.2;stroke-linecap:round}
 
 /* ---------- Appel final ---------- */
-.vt-final{position:relative;overflow:hidden;margin:0 auto 8px;padding:72px 40px;text-align:center;border-radius:26px;background:var(--c-ink);color:var(--c-page);box-shadow:var(--ombre-pose)}
-.vt-final::before{content:"";position:absolute;inset:-40% -10% auto;height:520px;background:radial-gradient(50% 60% at 50% 0%,color-mix(in srgb,var(--c-brand) 46%,transparent),transparent 72%);opacity:.5;pointer-events:none}
+/* Terminal de conteneurs en fond, voilé pour que le texte reste lisible. */
+.vt-final{position:relative;overflow:hidden;margin:0 auto 8px;padding:72px 40px;text-align:center;border-radius:26px;color:var(--c-page);box-shadow:var(--ombre-pose);background:linear-gradient(rgba(26,25,23,.88),rgba(26,25,23,.94)),url('{{ asset('img/cta-conteneurs.webp') }}') center/cover no-repeat var(--c-ink)}
+.vt-final::before{content:"";position:absolute;inset:-40% -10% auto;height:520px;background:radial-gradient(50% 60% at 50% 0%,color-mix(in srgb,var(--c-brand) 46%,transparent),transparent 72%);opacity:.35;pointer-events:none}
 .vt-final h2{position:relative;margin:0 auto 14px;max-width:20ch;color:var(--c-page);font-size:clamp(1.8rem,3.5vw,2.6rem);letter-spacing:-.035em;line-height:1.08}
 .vt-final p{position:relative;margin:0 auto 28px;max-width:46ch;opacity:.72}
 .vt-final .vt-actions{position:relative;justify-content:center;margin:0}
@@ -271,27 +324,30 @@ section[id]{scroll-margin-top:86px}
 .vt-marque p{margin:16px 0 0;color:var(--c-ink-2);font-size:.91rem;line-height:1.6;max-width:32ch}
 .vt-marque .lieu{display:inline-flex;align-items:center;gap:8px;margin-top:16px;color:var(--c-muted);font-size:.79rem}
 .vt-marque .lieu::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--c-brand)}
-.vt-col h4{margin:0 0 15px;font-size:.69rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--c-muted)}
+.vt-col h3{margin:0 0 6px;font-size:.78rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--c-muted)}
 .vt-col ul{list-style:none;margin:0;padding:0}
-.vt-col li{margin:0 0 10px}
-.vt-col a{color:var(--c-ink-2);text-decoration:none;font-size:.89rem}
+.vt-col li{margin:0}
+.vt-col a{display:inline-flex;align-items:center;min-height:44px;color:var(--c-ink-2);text-decoration:none;font-size:.89rem}
 .vt-col a:hover{color:var(--c-brand)}
 .vt-pied-bas{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:17px 0 21px;border-top:var(--vt-hair);color:var(--c-muted);font-size:.81rem}
-.vt-pied-bas a{color:var(--c-muted);text-decoration:none}
+.vt-pied-bas a{display:inline-flex;align-items:center;min-height:44px;color:var(--c-muted);text-decoration:none}
 .vt-pied-bas a:hover{color:var(--c-brand)}
 .vt-pied-bas .droits{color:var(--c-ink-2);font-weight:500}
 
 /* ---------- Responsive ---------- */
 @media (max-width:980px){
+  .vt-barre{background:color-mix(in srgb,var(--c-page) 96%,transparent);backdrop-filter:none}
+  .vt-barre.defile{background:color-mix(in srgb,var(--c-page) 99%,transparent)}
   .vt-hero{grid-template-columns:1fr;gap:34px;padding:44px 0 56px}
   .vt-nav{grid-template-columns:1fr auto;gap:14px}
   .vt-liens{display:none}
+  .menu-mobile{display:block;grid-column:1/-1}
   .jour article,.jour article:nth-child(even){grid-template-columns:1fr;gap:20px;padding:32px 0}
   .jour article:nth-child(even) .jour-texte{order:0}
   .gx{grid-template-columns:1fr;gap:0}
   .gx-visuel{display:none}
-  .gx-texte li{min-height:0;opacity:1;padding:26px 0;border-top:var(--vt-hair)}
-  .gx-texte li:first-child{border-top:0;padding-top:0}
+  .gx-texte > li{min-height:0;opacity:1;padding:26px 0;border-top:var(--vt-hair)}
+  .gx-texte > li:first-child{border-top:0;padding-top:0}
   .gx-mini{display:block;width:100%;padding:0;border:1px solid var(--c-line);border-radius:14px;overflow:hidden;background:var(--c-surface);box-shadow:var(--ombre-fine);margin-bottom:18px;cursor:zoom-in}
   .gx-mini img{display:block;width:100%;height:auto;max-height:340px;object-fit:cover;object-position:top}
   .mod{grid-template-columns:1fr;gap:26px}
@@ -301,7 +357,7 @@ section[id]{scroll-margin-top:86px}
   .vt-entete{grid-template-columns:1fr}
   .vt-index{display:none}
   .cameo{display:none}
-  .rail-etape{font-size:.62rem;letter-spacing:.1em}
+  .rail-etape{letter-spacing:.06em}
   .vt-pied-haut{grid-template-columns:1fr 1fr;gap:30px;padding:38px 0 30px}
   .vt-marque{grid-column:1/-1}
   .vt-section{padding:54px 0}
@@ -317,30 +373,66 @@ section[id]{scroll-margin-top:86px}
 </head>
 <body id="haut">
 @php
-    // WhatsApp si un numéro est configuré, sinon demande de démonstration par e-mail :
-    // ce bouton ne renvoie jamais vers le formulaire d'inscription.
+    // La vitrine ne doit jamais renvoyer d'erreur 500 : un lien vers une route
+    // absente n'est simplement pas rendu.
+    $url = static fn (string $nom): ?string => \Illuminate\Support\Facades\Route::has($nom) ? route($nom) : null;
+    $urlConnexion = $url('connexion');
+    $urlInscription = $url('inscription');
+    $urlSuivi = $url('suivi');
+    $urlConditions = $url('conditions');
+
+    // Canal de contact : WhatsApp si un numéro est configuré, sinon e-mail.
+    // Sans aucun des deux, aucun bouton de contact n'est rendu (jamais de
+    // mailto vers un domaine non configuré).
+    $contactEmail = trim((string) config('app.contact_email'));
     $whatsapp = preg_replace('/\D/', '', (string) config('app.whatsapp'));
     $demoExterne = $whatsapp !== '';
     $lienDemo = $demoExterne
         ? 'https://wa.me/'.$whatsapp.'?text='.rawurlencode('Bonjour, je souhaite une démonstration de Jalon pour mon agence.')
-        : 'mailto:contact@jalon.tg?subject='.rawurlencode('Demande de démonstration Jalon');
+        : ($contactEmail !== '' ? 'mailto:'.$contactEmail.'?subject='.rawurlencode('Demande de démonstration Jalon') : null);
+    $lienContact = $contactEmail !== '' ? 'mailto:'.$contactEmail : null;
+
+    // Démonstration : le formulaire de demande de créneau est le canal principal.
+    $urlDemo = $url('demo');
+
+    // Demande d'espace agence : le formulaire d'inscription, onglet agence.
+    $urlInscriptionAgence = $urlInscription ? route('inscription', ['vous' => 'agence']) : null;
+
+    // « Parler à Samuel » : WhatsApp s'il est configuré, sinon le formulaire.
+    $urlParler = $lienDemo ?? $urlDemo;
+
+    // Ancres de navigation, partagées par la barre et le menu mobile.
+    $liens = [
+        'solution' => 'La solution',
+        'journee' => 'Une journée',
+        'apercu' => 'Aperçu',
+        'modules' => 'Modules',
+        'offres' => 'Offres',
+        'faq' => 'FAQ',
+    ];
+
+    // La mention « Connexion chiffrée » n'est affichée que si c'est vrai.
+    $connexionChiffree = request()->isSecure() || config('app.env') === 'production';
 @endphp
 
-<div class="vt-barre" id="barre"><div class="vt"><div class="vt-nav">
+<a class="saut" href="#solution">Aller au contenu</a>
+
+<header class="vt-barre" id="barre"><div class="vt"><div class="vt-nav">
 <a href="{{ url('/') }}" aria-label="Jalon, accueil"><x-logo :hauteur="28" /></a>
 <nav class="vt-liens" aria-label="Navigation principale">
-<a href="#solution">La solution</a>
-<a href="#journee">Une journée</a>
-<a href="#apercu">Aperçu</a>
-<a href="#modules">Modules</a>
-<a href="#offres">Offres</a>
-<a href="#faq">FAQ</a>
+@foreach ($liens as $ancre => $libelle)<a href="#{{ $ancre }}">{{ $libelle }}</a>@endforeach
 </nav>
 <div class="vt-nav-actions">
-<a href="{{ route('connexion') }}">Connexion</a>
-<x-bouton :href="route('inscription')" taille="petit">Créer mon espace</x-bouton>
+@if ($urlConnexion)<a href="{{ $urlConnexion }}">Connexion</a>@endif
+@if ($urlInscription)<x-bouton :href="$urlInscription" taille="petit">Créer mon espace</x-bouton>@endif
 </div>
-</div></div></div>
+<details class="menu-mobile">
+<summary>Menu</summary>
+<nav aria-label="Navigation mobile">
+@foreach ($liens as $ancre => $libelle)<a href="#{{ $ancre }}">{{ $libelle }}</a>@endforeach
+</nav>
+</details>
+</div></div></header>
 
 <main>
 <section class="vt vt-hero">
@@ -350,50 +442,52 @@ section[id]{scroll-margin-top:86px}
 <p class="vt-eyebrow" data-r>Suivi de transit et de douane · Port de Lomé</p>
 <h1>
 <span class="ln"><span style="--i:0">Vos dossiers avancent.</span></span>
-<span class="ln"><span style="--i:1"><em>Jalon en garde</em></span></span>
-<span class="ln"><span style="--i:2">la trace.</span></span>
+<span class="ln"><span style="--i:1">Jalon <em>en garde</em></span></span>
+<span class="ln"><span style="--i:2"><em>la trace</em>.</span></span>
 </h1>
 <p class="vt-lead" data-r style="--d:4">Dossiers, conteneurs, documents, factures et clients dans une seule application, pensée pour les transitaires du Port de Lomé. Chaque étape datée, chaque importateur informé.</p>
 <div class="vt-actions" data-r style="--d:5">
-<x-bouton :href="route('inscription')">Créer mon espace</x-bouton>
-<x-bouton :href="$lienDemo" variante="encre">Demander une démo</x-bouton>
+@if ($urlInscription)<x-bouton :href="$urlInscription">Je suis solo : créer mon espace</x-bouton>@endif
+@if ($urlDemo)<a href="{{ $urlDemo }}" class="btn btn-encre">Demander une démo</a>@endif
 </div>
 <ul class="vt-preuves" data-r style="--d:5">
-<li>Sans engagement</li>
 <li>Interface en français</li>
-<li>Support à Lomé</li>
+<li>Données isolées par agence</li>
 </ul>
-<form class="vt-suivi" method="GET" action="{{ route('suivi') }}" data-r style="--d:6">
+@if ($urlSuivi)
+<form class="vt-suivi" method="GET" action="{{ $urlSuivi }}" data-r style="--d:6">
 <input type="text" name="code" placeholder="Code de suivi" aria-label="Code de suivi du dossier" autocomplete="off">
 <button type="submit" class="btn btn-primaire">Suivre</button>
 </form>
+@endif
 <p class="vt-aide" data-r style="--d:6">Importateur ? Entrez le code remis par votre transitaire, sans compte.</p>
 </div>
 
-<aside class="vt-carte" data-r style="--d:3" aria-label="Exemple de suivi d’un dossier">
+<figure class="vt-carte" data-r style="--d:3" tabindex="0">
+<figcaption class="sr-only">Exemple de suivi d’un dossier, données fictives</figcaption>
 <div class="vt-carte-tete">
 <div><small>Dossier JL-2027-0031</small><strong>Société Adjo Import</strong></div>
 <span class="vt-puce">Franchise : J-2</span>
 </div>
 <ol class="vt-jalons" id="carteJalons">
-<li class="fait">Dossier créé</li>
-<li class="fait">Documents transmis</li>
-<li class="fait">ECTN / BESC</li>
-<li class="fait">Manifeste déposé</li>
-<li class="fait">Déclaration soumise</li>
-<li class="actuel">Inspection</li>
-<li>Droits à payer</li>
-<li>Bon à enlever</li>
-<li>Marchandise livrée</li>
+<li class="fait">Dossier créé<span class="sr-only"> (terminé)</span></li>
+<li class="fait">Documents transmis<span class="sr-only"> (terminé)</span></li>
+<li class="fait">ECTN / BESC<span class="sr-only"> (terminé)</span></li>
+<li class="fait">Manifeste déposé<span class="sr-only"> (terminé)</span></li>
+<li class="fait">Déclaration soumise<span class="sr-only"> (terminé)</span></li>
+<li class="actuel" aria-current="step">Inspection<span class="sr-only"> (en cours)</span></li>
+<li>Droits à payer<span class="sr-only"></span></li>
+<li>Bon à enlever<span class="sr-only"></span></li>
+<li>Marchandise livrée<span class="sr-only"></span></li>
 </ol>
 <div class="vt-carte-pied"><span id="carteEtape">Étape 6 sur 9</span><span class="vt-jauge" aria-hidden="true"><i id="carteJauge"></i></span></div>
 <p class="vt-note">Exemple d’illustration, données fictives.</p>
-</aside>
+</figure>
 </section>
 
 <div class="vt-rassure"><div class="vt">
 <ul>
-<li>Connexion chiffrée</li>
+@if ($connexionChiffree)<li>Connexion chiffrée</li>@endif
 <li>Données isolées par agence</li>
 <li>Documents en stockage privé</li>
 <li>Prêt en trois étapes</li>
@@ -429,7 +523,7 @@ section[id]{scroll-margin-top:86px}
 <div class="rail" data-r aria-hidden="true">
 <div class="rail-scene">
 <span class="rail-voie"></span>
-<span class="rail-conteneur"></span>
+<span class="rail-piste"><span class="rail-conteneur"></span></span>
 <span class="rail-etape" style="--x:6%;--d:0s"><i class="rail-point"></i>Port</span>
 <span class="rail-etape" style="--x:34%;--d:2.4s"><i class="rail-point"></i>Douane</span>
 <span class="rail-etape" style="--x:63%;--d:4.8s"><i class="rail-point"></i>Droits</span>
@@ -511,10 +605,12 @@ section[id]{scroll-margin-top:86px}
 </article>
 </div>
 
+@if ($urlDemo)
 <div class="bande-cta" data-r>
 <p>Vous voulez voir ce parcours sur vos propres dossiers ?<small>Une démonstration de 20 minutes suffit pour décider.</small></p>
-<x-bouton :href="$lienDemo" taille="petit">Demander une démo</x-bouton>
+<a href="{{ $urlDemo }}" class="btn btn-encre btn-petit">Demander une démo</a>
 </div>
+@endif
 </section>
 
 @php
@@ -530,6 +626,13 @@ section[id]{scroll-margin-top:86px}
         ['espace-client-mobile','Portail client','Tous ses dossiers, leur progression et leur alerte, en lecture seule.'],
         ['suivi-par-code-mobile','Suivi par code','L’importateur entre son code et voit où en est sa marchandise, sans compte.'],
     ];
+
+    // Dimensions intrinsèques des captures : évite tout décalage de mise en page.
+    $dim = static function (string $nom): array {
+        $taille = @getimagesize(public_path('img/captures/'.$nom.'.webp'));
+
+        return $taille ? [$taille[0], $taille[1]] : [1600, 1000];
+    };
 @endphp
 <section class="vt vt-section" id="apercu">
 <div class="vt-entete">
@@ -547,11 +650,11 @@ section[id]{scroll-margin-top:86px}
 <button type="button" class="gx-ouvrir" id="gxOuvrir" data-zoom="{{ asset('img/captures/'.$ecrans[0][0].'.webp') }}" aria-label="Agrandir l’aperçu">
 <span class="gx-images">
 @foreach ($ecrans as $i => $e)
-<img class="gx-img @if ($i === 0) actif @endif" src="{{ asset('img/captures/'.$e[0].'.webp') }}" alt="{{ $e[2] }}" @if ($i > 0) loading="lazy" @endif decoding="async">
+<img class="gx-img @if ($i === 0) actif @endif" src="{{ asset('img/captures/'.$e[0].'.webp') }}" alt="{{ $e[2] }}" width="{{ $dim($e[0])[0] }}" height="{{ $dim($e[0])[1] }}" @if ($i > 0) aria-hidden="true" loading="lazy" @endif decoding="async">
 @endforeach
 </span>
 </button>
-<div class="gx-pied"><span class="gx-compteur"><b id="gxNum">01</b> / {{ str_pad(count($ecrans), 2, '0', STR_PAD_LEFT) }}</span><span>Cliquez pour agrandir</span></div>
+<div class="gx-pied"><span class="gx-compteur"><b id="gxNum" aria-live="polite">01</b> / {{ str_pad(count($ecrans), 2, '0', STR_PAD_LEFT) }}</span><span>Cliquez pour agrandir</span></div>
 </div>
 <p class="vt-note">Maquettes filigranées, données fictives.</p>
 </div>
@@ -559,7 +662,7 @@ section[id]{scroll-margin-top:86px}
 <ol class="gx-texte" id="gxListe">
 @foreach ($ecrans as $i => $e)
 <li data-ecran="{{ $i }}" class="@if ($i === 0) actif @endif">
-<button type="button" class="gx-mini" data-zoom="{{ asset('img/captures/'.$e[0].'.webp') }}" aria-label="Agrandir : {{ $e[2] }}"><img src="{{ asset('img/captures/'.$e[0].'.webp') }}" alt="{{ $e[2] }}" loading="lazy" decoding="async"></button>
+<button type="button" class="gx-mini" data-zoom="{{ asset('img/captures/'.$e[0].'.webp') }}" aria-label="Agrandir : {{ $e[2] }}"><img src="{{ asset('img/captures/'.$e[0].'.webp') }}" alt="{{ $e[2] }}" width="{{ $dim($e[0])[0] }}" height="{{ $dim($e[0])[1] }}" loading="lazy" decoding="async"></button>
 <p class="vt-eyebrow">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }} · {{ $e[1] }}</p>
 <h3>{{ $e[2] }}</h3>
 <p>{{ $e[3] }}</p>
@@ -576,17 +679,20 @@ section[id]{scroll-margin-top:86px}
 </div>
 <div class="ph">
 @foreach ($mobiles as $m)
-<figure data-r style="--d:{{ $loop->index }}"><button type="button" class="ph-i" data-zoom="{{ asset('img/captures/'.$m[0].'.webp') }}" aria-label="Agrandir : {{ $m[1] }}"><img src="{{ asset('img/captures/'.$m[0].'.webp') }}" alt="{{ $m[1] }}" loading="lazy" decoding="async"></button><figcaption><b>{{ $m[1] }}</b>{{ $m[2] }}</figcaption></figure>
+<figure data-r style="--d:{{ $loop->index }}"><button type="button" class="ph-i" data-zoom="{{ asset('img/captures/'.$m[0].'.webp') }}" aria-label="Agrandir : {{ $m[1] }}"><img src="{{ asset('img/captures/'.$m[0].'.webp') }}" alt="{{ $m[1] }}" width="{{ $dim($m[0])[0] }}" height="{{ $dim($m[0])[1] }}" loading="lazy" decoding="async"></button><figcaption><b>{{ $m[1] }}</b>{{ $m[2] }}</figcaption></figure>
 @endforeach
 </div>
 </div>
 
 <div class="bande-cta" data-r>
 <p>Prêt à voir vos dossiers dans cette interface ?<small>Votre espace se crée en quelques minutes.</small></p>
-<x-bouton :href="route('inscription')" taille="petit">Créer mon espace</x-bouton>
+@if ($urlInscription)<x-bouton :href="$urlInscription" taille="petit">Créer mon espace</x-bouton>@endif
 </div>
 </section>
-<div class="lb" id="lb" hidden><img alt=""></div>
+<dialog class="lb" id="lb" aria-label="Aperçu agrandi">
+<button type="button" class="lb-fermer" id="lbFermer">Fermer</button>
+<img alt="">
+</dialog>
 
 <section class="vt vt-section" id="modules">
 <div class="vt-entete">
@@ -626,6 +732,12 @@ section[id]{scroll-margin-top:86px}
 </ul>
 </div>
 </div>
+<div class="chiffres">
+<div data-r><strong>9</strong><span>jalons suivis par dossier</span></div>
+<div data-r style="--d:1"><strong>3</strong><span>rappels de franchise : J-2, J-1, J0</span></div>
+<div data-r style="--d:2"><strong>1</strong><span>code de suivi par dossier, sans compte</span></div>
+<div data-r style="--d:3"><strong>1 fiche</strong><span>pour tout le dossier : pièces, conteneurs, coûts, facture</span></div>
+</div>
 </section>
 
 <section class="vt vt-section" id="securite">
@@ -637,12 +749,16 @@ section[id]{scroll-margin-top:86px}
 <span class="vt-index">05 / 07</span>
 </div>
 <div class="secu">
+@if ($connexionChiffree)
 <div data-r><b>Connexion chiffrée</b><p>Les échanges avec l’application sont protégés en transit.</p></div>
+@endif
 <div data-r style="--d:1"><b>Données isolées</b><p>Chaque agence ne voit que ses dossiers, clients et factures.</p></div>
 <div data-r style="--d:2"><b>Permissions par rôle</b><p>Administrateur, transitaire, comptable : chacun accède à ce qui le concerne.</p></div>
 <div data-r style="--d:3"><b>Documents privés</b><p>Stockage non public, téléchargement après vérification des droits.</p></div>
 </div>
-<p class="secu-lien"><a href="{{ route('conditions') }}">Conditions d’utilisation et propriété intellectuelle</a></p>
+@if ($urlConditions)
+<p class="secu-lien"><a href="{{ $urlConditions }}">Conditions d’utilisation et propriété intellectuelle</a></p>
+@endif
 </section>
 
 <section class="vt vt-section" id="offres">
@@ -664,7 +780,8 @@ section[id]{scroll-margin-top:86px}
 <li>Suivi client par code, sans compte</li>
 <li>Exports CSV et journal d’activité</li>
 </ul>
-<div class="cta"><x-bouton :href="route('inscription')">Créer mon espace</x-bouton></div>
+<div class="cta">@if ($urlInscription)<x-bouton :href="$urlInscription">Je suis solo : créer mon espace</x-bouton>@endif</div>
+<p class="cta-lien">@if ($urlDemo)<a href="{{ $urlDemo }}">Voir d’abord une démo de 20 minutes</a>@endif</p>
 </article>
 <article class="offre offre--agence" data-r style="--d:1">
 <h3>Agence de transit</h3>
@@ -672,10 +789,11 @@ section[id]{scroll-margin-top:86px}
 <ul>
 <li>Rôles, permissions et invitations par e-mail</li>
 <li>Portail client en lecture seule</li>
-<li>Installation accompagnée par notre équipe</li>
+<li>Installation accompagnée par l’équipe Jalon</li>
 <li>Facturation et workflow à vos règles</li>
 </ul>
-<div class="cta"><x-bouton :href="$lienDemo" variante="encre">Demander une démo</x-bouton></div>
+<div class="cta">@if ($urlDemo)<a href="{{ $urlDemo }}" class="btn btn-encre">Demander une démo</a>@endif</div>
+<p class="cta-lien">@if ($urlInscriptionAgence)<a href="{{ $urlInscriptionAgence }}">Ou demander un espace agence</a>@endif</p>
 </article>
 </div>
 <p class="offre-note">Les tarifs sont présentés lors de la prise de contact, selon la taille de votre structure.</p>
@@ -684,9 +802,9 @@ section[id]{scroll-margin-top:86px}
 <section class="vt vt-section" id="agences-pilotes">
 <div class="vt-entete">
 <div>
-<p class="vt-eyebrow" data-r>Agences pionnières</p>
-<h2 data-r>Les premières agences installent Jalon avec nous.</h2>
-<p class="vt-intro" data-r>Vous démarrez avec l’équipe, pas avec un mode d’emploi.</p>
+<p class="vt-eyebrow" data-r>Programme agences pionnières</p>
+<h2 data-r>Les premières agences sont accompagnées à l’installation.</h2>
+<p class="vt-intro" data-r>Vous démarrez avec l’équipe Jalon, pas avec un mode d’emploi.</p>
 </div>
 <div class="cameo" data-r aria-hidden="true">
 <svg viewBox="0 0 200 120" role="presentation" focusable="false">
@@ -708,12 +826,6 @@ section[id]{scroll-margin-top:86px}
 <div data-r><i>01</i><b>Installation accompagnée</b><p>Nous paramétrons vos jalons, vos documents et votre facturation avec vous.</p></div>
 <div data-r style="--d:1"><i>02</i><b>Ligne directe</b><p>Un interlocuteur unique à Lomé, joignable pendant la mise en route.</p></div>
 <div data-r style="--d:2"><i>03</i><b>Vos retours comptent</b><p>Les demandes des premières agences entrent dans la feuille de route du produit.</p></div>
-</div>
-<div class="chiffres" style="margin-top:40px">
-<div data-r><strong>9</strong><span>jalons suivis par dossier</span></div>
-<div data-r style="--d:1"><strong>3</strong><span>rappels de franchise : J-2, J-1, J0</span></div>
-<div data-r style="--d:2"><strong>1</strong><span>code de suivi par dossier, sans compte</span></div>
-<div data-r style="--d:3"><strong>5 Mo</strong><span>par document, PDF, JPG ou PNG</span></div>
 </div>
 </section>
 
@@ -740,7 +852,7 @@ section[id]{scroll-margin-top:86px}
 <details><summary>Mon client a-t-il besoin d’un compte ?</summary><p>Non. Il peut suivre son dossier avec un simple code de suivi. Vous pouvez aussi lui ouvrir un portail en lecture seule.</p></details>
 <details><summary>Quelle différence entre solo et agence ?</summary><p>Le transitaire solo crée son espace lui-même et travaille seul. L’agence envoie une demande, nous la contactons, puis Jalon est installé pour elle avec son équipe et ses rôles.</p></details>
 <details><summary>Où sont stockés mes documents ?</summary><p>Dans un espace privé du serveur, jamais accessible par un lien public. L’accès est contrôlé selon vos droits.</p></details>
-<details><summary>Combien de temps pour démarrer ?</summary><p>Un espace solo est utilisable le jour même. Pour une agence, comptez une session de paramétrage avec notre équipe : jalons, documents exigés, rôles et facturation.</p></details>
+<details><summary>Combien de temps pour démarrer ?</summary><p>Un espace solo est utilisable le jour même. Pour une agence, comptez une session de paramétrage avec l’équipe Jalon : jalons, documents exigés, rôles et facturation.</p></details>
 <details><summary>Quel est le prix ?</summary><p>Nous vous présentons l’offre lors de la prise de contact, selon la taille de votre structure et le nombre de dossiers traités.</p></details>
 </div>
 </section>
@@ -748,8 +860,11 @@ section[id]{scroll-margin-top:86px}
 <section class="vt" style="padding-top:8px">
 <div class="vt-final" data-r>
 <h2>Ce soir, sachez où en est chaque dossier.</h2>
-<p>Créez votre espace, ou parlez à quelqu’un de l’équipe. Sans engagement.</p>
-<div class="vt-actions"><x-bouton :href="route('inscription')">Créer mon espace</x-bouton><x-bouton :href="$lienDemo" variante="encre">Parler à un expert</x-bouton></div>
+<p>Créez votre espace en quelques minutes, sans carte bancaire.</p>
+<div class="vt-actions">
+@if ($urlInscription)<x-bouton :href="$urlInscription">Je suis solo : créer mon espace</x-bouton>@endif
+@if ($urlParler)<a href="{{ $urlParler }}" class="btn btn-encre"@if ($demoExterne) target="_blank" rel="noopener"@endif>Parler à Samuel</a>@endif
+</div>
 </div>
 </section>
 </main>
@@ -764,7 +879,7 @@ section[id]{scroll-margin-top:86px}
 </div>
 
 <div class="vt-col">
-<h4>Produit</h4>
+<h3>Produit</h3>
 <ul>
 <li><a href="#solution">La solution</a></li>
 <li><a href="#journee">Une journée avec Jalon</a></li>
@@ -775,20 +890,20 @@ section[id]{scroll-margin-top:86px}
 </div>
 
 <div class="vt-col">
-<h4>Compte</h4>
+<h3>Compte</h3>
 <ul>
-<li><a href="{{ route('connexion') }}">Connexion</a></li>
-<li><a href="{{ route('inscription') }}">Créer mon espace</a></li>
-<li><a href="{{ $lienDemo }}"@if ($demoExterne) rel="noopener" target="_blank"@endif>Demander une démo</a></li>
-<li><a href="{{ route('suivi') }}">Suivre un dossier</a></li>
+@if ($urlConnexion)<li><a href="{{ $urlConnexion }}">Connexion</a></li>@endif
+@if ($urlInscription)<li><a href="{{ $urlInscription }}">Créer mon espace</a></li>@endif
+@if ($urlDemo)<li><a href="{{ $urlDemo }}">Demander une démo</a></li>@endif
+@if ($urlSuivi)<li><a href="{{ $urlSuivi }}">Suivre un dossier</a></li>@endif
 </ul>
 </div>
 
 <div class="vt-col">
-<h4>Informations</h4>
+<h3>Informations</h3>
 <ul>
-<li><a href="{{ route('conditions') }}">Conditions d’utilisation</a></li>
-<li><a href="mailto:contact@jalon.tg">contact@jalon.tg</a></li>
+@if ($urlConditions)<li><a href="{{ $urlConditions }}">Conditions d’utilisation</a></li>@endif
+@if ($lienContact)<li><a href="{{ $lienContact }}">{{ $contactEmail }}</a></li>@endif
 <li><a href="#faq">Questions fréquentes</a></li>
 </ul>
 </div>
@@ -814,15 +929,49 @@ section[id]{scroll-margin-top:86px}
   var barre = document.getElementById('barre');
   addEventListener('scroll', function () { barre.classList.toggle('defile', scrollY > 8); }, { passive: true });
 
+  // Lightbox : <dialog> natif (Échap, focus piégé, fond cliquable).
   var lb = document.getElementById('lb'), lbi = lb.querySelector('img');
+  var lbFermer = document.getElementById('lbFermer');
+  var declencheur = null;
+
   document.querySelectorAll('[data-zoom]').forEach(function (b) {
     b.addEventListener('click', function () {
-      lbi.src = b.dataset.zoom; lb.hidden = false; lb.scrollTop = 0; document.body.style.overflow = 'hidden';
+      declencheur = b;
+      lbi.src = b.dataset.zoom;
+      lb.scrollTop = 0;
+      lb.showModal();
+      document.body.classList.add('modale-ouverte');
+      lbFermer.focus();
     });
   });
-  function fermer() { lb.hidden = true; document.body.style.overflow = ''; }
-  lb.addEventListener('click', fermer);
-  addEventListener('keydown', function (e) { if (e.key === 'Escape') fermer(); });
+
+  // Restitution du contexte : déverrouillage du scroll et focus au déclencheur.
+  // Le focus est différé d'un tick car, tant que le dialogue est en couche
+  // supérieure, le reste du document est inerte et ne peut pas le recevoir.
+  var rendreFocus = function () {
+    document.body.classList.remove('modale-ouverte');
+    var cible = declencheur;
+    declencheur = null;
+    if (cible) { setTimeout(function () { cible.focus(); }, 0); }
+  };
+
+  var fermerApercu = function () {
+    if (lb.open) { lb.close(); }
+    rendreFocus();
+  };
+
+  lbFermer.addEventListener('click', fermerApercu);
+  lb.addEventListener('click', function (e) { if (e.target === lb) { fermerApercu(); } });
+  lb.addEventListener('cancel', rendreFocus);
+  lb.addEventListener('close', rendreFocus);
+
+  // Menu mobile : refermé dès qu'une ancre est choisie.
+  var menuMobile = document.querySelector('.menu-mobile');
+  if (menuMobile) {
+    menuMobile.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { menuMobile.open = false; });
+    });
+  }
 
   // Aperçu épinglé : l'écran et sa description changent au fil du scroll.
   var gxItems = document.querySelectorAll('#gxListe > li');
@@ -831,7 +980,11 @@ section[id]{scroll-margin-top:86px}
   var gxOuvrir = document.getElementById('gxOuvrir');
 
   function gxAfficher(i) {
-    gxImgs.forEach(function (img, k) { img.classList.toggle('actif', k === i); });
+    gxImgs.forEach(function (img, k) {
+      var actif = k === i;
+      img.classList.toggle('actif', actif);
+      img.setAttribute('aria-hidden', actif ? 'false' : 'true');
+    });
     gxItems.forEach(function (li, k) { li.classList.toggle('actif', k === i); });
     if (gxNum) { gxNum.textContent = ('0' + (i + 1)).slice(-2); }
     if (gxOuvrir && gxImgs[i]) { gxOuvrir.dataset.zoom = gxImgs[i].src; }
@@ -862,17 +1015,19 @@ section[id]{scroll-margin-top:86px}
     };
 
     addEventListener('scroll', function () {
-      if (!gxPlanifie) { gxPlanifie = true; setTimeout(gxSync, 20); }
+      if (!gxPlanifie) { gxPlanifie = true; requestAnimationFrame(gxSync); }
     }, { passive: true });
     addEventListener('resize', gxSync);
     gxSync();
   }
 
-  // Carte du héro : le dossier avance d'un jalon toutes les 4 secondes,
-  // puis repart de l'étape 6 en fondu. Désactivé si le mouvement est refusé.
+  // Carte du héro : le dossier avance d'un jalon toutes les 4 secondes et
+  // s'arrête sur la dernière étape après deux cycles. Pause au survol et au
+  // focus ; rien ne bouge si le mouvement est refusé.
   var carteJalons = document.getElementById('carteJalons');
 
   if (carteJalons && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var carte = carteJalons.closest('.vt-carte');
     var jalons = carteJalons.querySelectorAll('li');
     var carteEtape = document.getElementById('carteEtape');
     var carteJauge = document.getElementById('carteJauge');
@@ -880,18 +1035,28 @@ section[id]{scroll-margin-top:86px}
       return li.classList.contains('actuel');
     }));
     var courant = depart;
+    var tours = 0;
+    var enPause = false;
 
     var carteDessiner = function (i) {
       jalons.forEach(function (li, k) {
         li.classList.toggle('fait', k < i);
         li.classList.toggle('actuel', k === i);
+        if (k === i) { li.setAttribute('aria-current', 'step'); } else { li.removeAttribute('aria-current'); }
+        var muet = li.querySelector('.sr-only');
+        if (muet) { muet.textContent = k < i ? ' (terminé)' : (k === i ? ' (en cours)' : ''); }
       });
       if (carteEtape) { carteEtape.textContent = 'Étape ' + (i + 1) + ' sur ' + jalons.length; }
-      if (carteJauge) { carteJauge.style.width = Math.round(((i + 1) / jalons.length) * 100) + '%'; }
+      if (carteJauge) { carteJauge.style.transform = 'scaleX(' + ((i + 1) / jalons.length) + ')'; }
     };
 
-    setInterval(function () {
+    var boucle = setInterval(function () {
+      if (enPause) { return; }
+
       if (courant >= jalons.length - 1) {
+        tours += 1;
+        if (tours >= 2) { clearInterval(boucle); return; }
+
         carteJalons.classList.add('retour');
         setTimeout(function () {
           courant = depart;
@@ -903,6 +1068,13 @@ section[id]{scroll-margin-top:86px}
         carteDessiner(courant);
       }
     }, 4000);
+
+    ['mouseenter', 'focusin'].forEach(function (nom) {
+      carte.addEventListener(nom, function () { enPause = true; });
+    });
+    ['mouseleave', 'focusout'].forEach(function (nom) {
+      carte.addEventListener(nom, function () { enPause = false; });
+    });
   }
 })();
 </script>

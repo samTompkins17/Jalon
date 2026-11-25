@@ -7,6 +7,7 @@ use App\Enums\StatutActivation;
 use App\Mail\InvitationEmployeMail;
 use App\Models\Agence;
 use App\Models\DemandeAgence;
+use App\Models\DemandeDemo;
 use App\Models\Invitation;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -19,17 +20,36 @@ use Illuminate\View\View;
 
 class AdministrationPlateformeController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $onglet = $request->query('onglet', 'attente');
+
+        if ($onglet === 'traitees') {
+            $demandes = DemandeAgence::where('statut', '!=', 'en_attente')
+                ->with('administrateur')
+                ->orderBy('traitee_at', 'desc')
+                ->paginate(10, ['*'], 'traitees_page')
+                ->withQueryString();
+        } else {
+            $demandes = DemandeAgence::where('statut', 'en_attente')
+                ->latest()
+                ->paginate(8, ['*'], 'demandes_page')
+                ->withQueryString();
+        }
+
         return view('plateforme.index', [
             'agencesActives' => Agence::where('active', true)->count(),
             'agencesSuspendues' => Agence::where('active', false)->count(),
             'demandesEnAttente' => DemandeAgence::where('statut', 'en_attente')->count(),
-            'demandes' => DemandeAgence::where('statut', 'en_attente')
-                ->latest()
-                ->paginate(8, ['*'], 'demandes_page'),
+            'demandes' => $demandes,
+            'onglet' => $onglet,
             'agences' => Agence::withCount('users')->orderBy('nom')
-                ->paginate(10, ['*'], 'agences_page'),
+                ->paginate(10, ['*'], 'agences_page')
+                ->withQueryString(),
+            'demandesDemo' => DemandeDemo::count(),
+            'demos' => DemandeDemo::orderBy('creneau_at')
+                ->paginate(10, ['*'], 'demos_page')
+                ->withQueryString(),
         ]);
     }
 

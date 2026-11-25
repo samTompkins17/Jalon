@@ -40,6 +40,12 @@ class User extends Authenticatable
         ];
     }
 
+    /** Adresse publique de la photo de profil, ou null si aucune. */
+    public function urlPhoto(): ?string
+    {
+        return $this->photo_path ? asset('storage/'.$this->photo_path) : null;
+    }
+
     // ---------------------------------------------------------------- Relations
 
     public function agence(): BelongsTo

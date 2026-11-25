@@ -18,7 +18,7 @@
 
     <select id="{{ $nom }}" name="{{ $nom }}" @if ($requis) required @endif {{ $attributes }}>
         @if ($placeholder)
-            <option value="">{{ $placeholder }}</option>
+            <option value="" disabled>{{ $placeholder }}</option>
         @endif
         {{ $slot }}
     </select>

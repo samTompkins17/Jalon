@@ -103,72 +103,220 @@
                 </span>
             </div>
 
-            @forelse ($demandes as $demande)
-                <article class="console-demande">
-                    <div class="console-demande-tete">
-                        <span class="console-monogramme" aria-hidden="true">{{ $initiales($demande->nom_agence) }}</span>
+            {{-- Onglets ------------------------------------------------- --}}
+            <div class="segmented w-fit" role="group" aria-label="Historique des demandes">
+                <a href="{{ route('plateforme.index', ['onglet' => 'attente']) }}"
+                   @if ($onglet === 'attente') aria-current="page" @endif>
+                    En attente
+                </a>
+                <a href="{{ route('plateforme.index', ['onglet' => 'traitees']) }}"
+                   @if ($onglet === 'traitees') aria-current="page" @endif>
+                    Traitées
+                </a>
+            </div>
 
-                        <div class="min-w-0 flex-1">
-                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                <h3 class="text-[15px] font-semibold leading-tight">{{ $demande->nom_agence }}</h3>
-                                <x-badge variante="ambre" petit>Nouvelle</x-badge>
-                            </div>
+            @if ($onglet === 'traitees')
+                {{-- Liste des demandes traitées ------------------------------- --}}
+                @forelse ($demandes as $demande)
+                    <article class="console-demande">
+                        <div class="console-demande-tete">
+                            <span class="console-monogramme" aria-hidden="true">{{ $initiales($demande->nom_agence) }}</span>
 
-                            <p class="mt-1 text-[13px] text-ink-2">{{ $demande->nom_contact }}</p>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                    <h3 class="text-[15px] font-semibold leading-tight">{{ $demande->nom_agence }}</h3>
+                                    <x-badge :variante="$demande->statut === 'approuvee' ? 'vert' : 'rose'" petit>
+                                        {{ $demande->statut === 'approuvee' ? 'Approuvée' : 'Refusée' }}
+                                    </x-badge>
+                                </div>
 
-                            <div class="console-demande-meta">
-                                <span>
-                                    <x-icone nom="document" :taille="13" />
-                                    <a href="mailto:{{ $demande->email }}">{{ $demande->email }}</a>
-                                </span>
+                                <p class="mt-1 text-[13px] text-ink-2">{{ $demande->nom_contact }}</p>
 
-                                @if ($demande->telephone)
+                                <div class="console-demande-meta">
                                     <span>
-                                        <x-icone nom="utilisateur" :taille="13" />
-                                        {{ $demande->telephone }}
+                                        <x-icone nom="document" :taille="13" />
+                                        <a href="mailto:{{ $demande->email }}">{{ $demande->email }}</a>
                                     </span>
-                                @endif
 
-                                @if ($demande->numero_agrement)
+                                    @if ($demande->telephone)
+                                        <span>
+                                            <x-icone nom="utilisateur" :taille="13" />
+                                            {{ $demande->telephone }}
+                                        </span>
+                                    @endif
+
+                                    @if ($demande->motif_refus)
+                                        <span>
+                                            <x-icone nom="attention" :taille="13" />
+                                            Motif : {{ $demande->motif_refus }}
+                                        </span>
+                                    @endif
+
+                                    @if ($demande->administrateur)
+                                        <span>
+                                            <x-icone nom="equipe" :taille="13" />
+                                            Traité par {{ $demande->administrateur->nom }}
+                                        </span>
+                                    @endif
+
                                     <span>
-                                        <x-icone nom="check" :taille="13" />
-                                        Agrément {{ $demande->numero_agrement }}
+                                        <x-icone nom="calendrier" :taille="13" />
+                                        Traité le {{ $demande->traitee_at?->translatedFormat('j M Y à H:i') }}
                                     </span>
-                                @endif
-
-                                <span>
-                                    <x-icone nom="calendrier" :taille="13" />
-                                    Reçue le {{ $demande->created_at->translatedFormat('j M Y à H:i') }}
-                                </span>
+                                </div>
                             </div>
                         </div>
+                    </article>
+                @empty
+                    <div class="carte">
+                        <x-etat-vide icone="equipe" titre="Aucune demande traitée"
+                                     texte="Les demandes approuvées ou refusées apparaîtront ici." />
                     </div>
+                @endforelse
 
-                    <div class="console-demande-actions">
-                        <form method="POST" action="{{ route('plateforme.demandes.approuver', $demande) }}">
-                            @csrf
-                            <x-bouton type="submit" taille="petit" icone="check">Approuver et inviter</x-bouton>
-                        </form>
+                <x-pagination :paginateur="$demandes" />
+            @else
+                {{-- Liste des demandes en attente (existante) --------------- --}}
+                @forelse ($demandes as $demande)
+                    <article class="console-demande">
+                        <div class="console-demande-tete">
+                            <span class="console-monogramme" aria-hidden="true">{{ $initiales($demande->nom_agence) }}</span>
 
-                        <form method="POST" action="{{ route('plateforme.demandes.refuser', $demande) }}"
-                              class="console-refus"
-                              data-confirmer="Refuser la demande de {{ $demande->nom_agence }} ?">
-                            @csrf
-                            <input name="motif_refus" type="text" maxlength="500"
-                                   placeholder="Motif du refus (facultatif)"
-                                   aria-label="Motif du refus">
-                            <x-bouton type="submit" variante="contour" taille="petit">Refuser</x-bouton>
-                        </form>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                    <h3 class="text-[15px] font-semibold leading-tight">{{ $demande->nom_agence }}</h3>
+                                    <x-badge variante="ambre" petit>Nouvelle</x-badge>
+                                </div>
+
+                                <p class="mt-1 text-[13px] text-ink-2">{{ $demande->nom_contact }}</p>
+
+                                <div class="console-demande-meta">
+                                    <span>
+                                        <x-icone nom="document" :taille="13" />
+                                        <a href="mailto:{{ $demande->email }}">{{ $demande->email }}</a>
+                                    </span>
+
+                                    @if ($demande->telephone)
+                                        <span>
+                                            <x-icone nom="utilisateur" :taille="13" />
+                                            {{ $demande->telephone }}
+                                        </span>
+                                    @endif
+
+                                    @if ($demande->numero_agrement)
+                                        <span>
+                                            <x-icone nom="check" :taille="13" />
+                                            Agrément {{ $demande->numero_agrement }}
+                                        </span>
+                                    @endif
+
+                                    <span>
+                                        <x-icone nom="calendrier" :taille="13" />
+                                        Reçue le {{ $demande->created_at->translatedFormat('j M Y à H:i') }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="console-demande-actions">
+                            <form method="POST" action="{{ route('plateforme.demandes.approuver', $demande) }}">
+                                @csrf
+                                <x-bouton type="submit" taille="petit" icone="check">Approuver et inviter</x-bouton>
+                            </form>
+
+                            <form method="POST" action="{{ route('plateforme.demandes.refuser', $demande) }}"
+                                  class="console-refus"
+                                  data-confirmer="Refuser la demande de {{ $demande->nom_agence }} ?">
+                                @csrf
+                                <input name="motif_refus" type="text" maxlength="500"
+                                       placeholder="Motif du refus (facultatif)"
+                                       aria-label="Motif du refus">
+                                <x-bouton type="submit" variante="contour" taille="petit">Refuser</x-bouton>
+                            </form>
+                        </div>
+                    </article>
+                @empty
+                    <div class="carte">
+                        <x-etat-vide icone="equipe" titre="Aucune demande en attente"
+                                     texte="Les nouvelles inscriptions d’agences apparaîtront ici pour validation." />
                     </div>
-                </article>
-            @empty
-                <div class="carte">
-                    <x-etat-vide icone="equipe" titre="Aucune demande en attente"
-                                 texte="Les nouvelles inscriptions d’agences apparaîtront ici pour validation." />
+                @endforelse
+
+                <x-pagination :paginateur="$demandes" />
+            @endif
+        </section>
+
+        {{-- Demandes de démonstration -------------------------------------- --}}
+        <section id="demos" class="grid gap-4" aria-labelledby="demos-titre">
+            <div class="console-section-titre">
+                <div>
+                    <p class="etiquette">Vitrine</p>
+                    <h2 id="demos-titre" class="carte-titre">Demandes de démonstration</h2>
+                    <p class="carte-sous-titre">Créneaux demandés depuis la page « Demander une démo », du plus proche au plus lointain.</p>
                 </div>
-            @endforelse
+                <span class="console-pastille">
+                    <x-icone nom="calendrier" :taille="13" />
+                    {{ $demandesDemo }} au total
+                </span>
+            </div>
 
-            <x-pagination :paginateur="$demandes" />
+            <div class="carte overflow-hidden">
+                <div class="tableau-scroll">
+                    <table class="tableau">
+                        <thead>
+                            <tr>
+                                <th scope="col">Créneau demandé</th>
+                                <th scope="col">Demandeur</th>
+                                <th scope="col">Contact</th>
+                                <th scope="col">Format</th>
+                                <th scope="col">Reçue le</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($demos as $demo)
+                                <tr>
+                                    <td class="cellule-compacte">
+                                        <p class="font-semibold">{{ $demo->creneau_at->translatedFormat('l j F Y') }}</p>
+                                        <p class="text-[12px] text-muted">{{ $demo->creneau_at->format('H:i') }} · heure de Lomé</p>
+                                    </td>
+                                    <td>
+                                        <p class="font-medium">{{ $demo->nom }}</p>
+                                        <p class="text-[12px] text-muted">{{ $demo->agence ?: 'Sans agence' }}</p>
+                                        @if ($demo->message)
+                                            <p class="mt-1 text-[12px] text-muted">{{ \Illuminate\Support\Str::limit($demo->message, 90) }}</p>
+                                        @endif
+                                    </td>
+                                    <td class="cellule-compacte">
+                                        <p><a href="mailto:{{ $demo->email }}">{{ $demo->email }}</a></p>
+                                        <p class="text-[12px] text-muted">{{ $demo->telephone }}</p>
+                                    </td>
+                                    <td>
+                                        <x-badge :variante="$demo->format === 'presentiel' ? 'vert' : 'ambre'">
+                                            {{ $demo->libelleFormat() }}
+                                        </x-badge>
+                                    </td>
+                                    <td class="cellule-compacte text-[12px] text-muted">
+                                        {{ $demo->created_at->translatedFormat('j M Y à H:i') }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5">
+                                        <x-etat-vide icone="calendrier" titre="Aucune demande de démonstration"
+                                                     texte="Les demandes envoyées depuis la vitrine apparaîtront ici avec le créneau choisi." />
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if ($demos->hasPages())
+                    <div class="carte-corps border-t" style="border-color: var(--c-line-soft)">
+                        <x-pagination :paginateur="$demos" />
+                    </div>
+                @endif
+            </div>
         </section>
 
         {{-- Agences -------------------------------------------------------- --}}

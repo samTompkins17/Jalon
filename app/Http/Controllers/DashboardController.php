@@ -65,6 +65,8 @@ class DashboardController extends Controller
             'comparaison' => $comparaison,
             'caPeriode' => $caPeriode,
             'variation' => $variation,
+            'statsKpi' => $this->statsKpi($agenceId),
+            'barresCa12' => $this->chiffreAffairesParMois($agenceId, 12),
             'labelsMois' => $labelsMois,
             'dossiersParMois' => $dossiersParMois,
             'caParMois' => $caParMois,
@@ -87,6 +89,50 @@ class DashboardController extends Controller
         return (float) Facture::where('agence_id', $agenceId)
             ->whereBetween('date_facture', [$debut->toDateString(), $fin->toDateString()])
             ->sum('total');
+    }
+
+    /** CA mensuel des N derniers mois (mois courant en dernier), indexé par « Y-m ». */
+    private function chiffreAffairesParMois(int $agenceId, int $nombreMois): array
+    {
+        $debut = now()->startOfMonth()->subMonths($nombreMois - 1);
+
+        $parMois = Facture::where('agence_id', $agenceId)
+            ->where('date_facture', '>=', $debut->toDateString())
+            ->selectRaw("DATE_FORMAT(date_facture, '%Y-%m') as mois, SUM(total) as total")
+            ->groupBy('mois')
+            ->pluck('total', 'mois');
+
+        return collect(range($nombreMois - 1, 0, -1))
+            ->mapWithKeys(function (int $retour) use ($parMois) {
+                $cle = now()->startOfMonth()->subMonths($retour)->format('Y-m');
+
+                return [$cle => (float) ($parMois[$cle] ?? 0)];
+            })
+            ->values()
+            ->all();
+    }
+
+    /** Compteurs de la rangée KPI, tous scopés à l'agence. */
+    private function statsKpi(int $agenceId): array
+    {
+        $conteneursBase = fn () => Conteneur::query()
+            ->where('statut', 'au_port')
+            ->whereHas('dossier', fn ($requete) => $requete->where('agence_id', $agenceId));
+
+        return [
+            'dossiers' => Dossier::where('agence_id', $agenceId)
+                ->where('brouillon', false)
+                ->where(fn ($requete) => $requete->where('jalon_actuel', '<', 9)->orWhereNull('date_cloture'))
+                ->count(),
+            'conteneurs' => $conteneursBase()->count(),
+            'franchises' => $conteneursBase()
+                ->whereNotNull('fin_franchise')
+                ->whereDate('fin_franchise', '<=', today())
+                ->count(),
+            'factures' => Facture::where('agence_id', $agenceId)
+                ->whereIn('statut', ['impayee', 'partielle'])
+                ->count(),
+        ];
     }
 
     /** @return Collection<int, Conteneur> */

@@ -91,7 +91,11 @@
                         <tr>
                             <td>
                                 <div class="flex items-center gap-3">
-                                    <span class="avatar" style="width:34px;height:34px;font-size:12px">{{ $membre->initiales }}</span>
+                                    @if ($membre->photo_path)
+                                        <img src="{{ $membre->urlPhoto() }}" alt="" class="avatar avatar--photo" style="width:34px;height:34px">
+                                    @else
+                                        <span class="avatar" style="width:34px;height:34px;font-size:12px">{{ $membre->initiales }}</span>
+                                    @endif
                                     <div class="min-w-0">
                                         <p class="cellule-client">{{ $membre->nom }}@if ($membre->id === auth()->id()) <span class="text-muted">(vous)</span>@endif</p>
                                         <p class="text-[12px] text-muted">{{ $membre->email }}</p>

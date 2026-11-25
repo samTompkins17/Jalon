@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ConteneurController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DemoController;
 use App\Http\Controllers\DossierController;
 use App\Http\Controllers\EquipeController;
 use App\Http\Controllers\ExportController;
@@ -37,6 +38,13 @@ Route::get('/', function () {
 });
 
 Route::view('/conditions-utilisation', 'conditions')->name('conditions');
+Route::view('/animations', 'animations-demo')->name('animations');
+
+// Demande de démonstration ouverte à tous (formulaire et créneau).
+Route::get('/demo', [DemoController::class, 'create'])->name('demo');
+Route::post('/demo', [DemoController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('demo.store');
 
 Route::middleware('guest')->group(function () {
     Route::get('/connexion', [AuthController::class, 'create'])->name('connexion');

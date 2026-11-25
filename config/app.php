@@ -128,4 +128,7 @@ return [
     // Numéro WhatsApp de contact, format international sans espace (228...).
     'whatsapp' => env('APP_WHATSAPP'),
 
+    // Adresse e-mail de contact (repli quand WhatsApp n'est pas configuré).
+    'contact_email' => env('APP_CONTACT_EMAIL'),
+
 ];

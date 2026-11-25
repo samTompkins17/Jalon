@@ -19,6 +19,7 @@
     </script>
 
     @vite(['resources/css/global.css', 'resources/css/agence.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="{{ asset('css/ui-animations.css') }}">
 </head>
 <body>
     <div class="portail">
@@ -56,5 +57,6 @@
     </div>
 
     <x-toasts />
+    <script src="{{ asset('js/ui-animations.js') }}" defer></script>
 </body>
 </html>

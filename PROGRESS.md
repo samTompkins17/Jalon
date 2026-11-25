@@ -348,6 +348,7 @@ Laravel 12 · Blade · Livewire 4 · Tailwind CSS 4 · MySQL · interface 100 % 
 
 ```bash
 php artisan migrate:fresh --seed   # base de démonstration
+php artisan storage:link           # photos de profil servies depuis /storage
 npm run build                      # assets de production
 php artisan serve                  # http://127.0.0.1:8000
 ```

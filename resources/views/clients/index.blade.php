@@ -14,7 +14,7 @@
 
 @section('contenu')
     <div class="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-        <x-carte titre="Aperçu des clients" sous-titre="Sélectionnez un client pour afficher sa fiche.">
+        <x-carte titre="Aperçu des clients" sous-titre="Sélectionnez un client pour afficher sa fiche." data-anim="arrive" data-tilt>
             <div class="tableau-scroll">
                 <table class="tableau">
                     <thead>
@@ -73,7 +73,7 @@
                 $compteActif = $selection->utilisateur?->estActif() ?? false;
             @endphp
 
-            <x-carte class="fiche-conteneur">
+            <x-carte class="fiche-conteneur" data-anim="arrive" data-tilt>
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     @if ($compteActif)
                         <x-badge variante="vert">● Compte client actif</x-badge>

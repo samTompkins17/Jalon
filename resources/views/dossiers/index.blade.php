@@ -14,7 +14,7 @@
 
 @section('contenu')
     <div class="grid gap-5">
-        <div class="carte">
+        <div class="carte" data-anim="arrive">
             <div class="carte-corps">
                 <form method="GET" action="{{ route('dossiers.index') }}" class="barre-filtres">
                     @if ($recherche !== '')
@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <x-carte>
+        <x-carte data-anim="arrive">
             <div class="tableau-scroll">
 <table class="tableau">
                 <thead>
