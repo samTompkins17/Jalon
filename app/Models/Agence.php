@@ -18,6 +18,7 @@ class Agence extends Model
         'facture_prefixe', 'facture_annee', 'facture_increment',
         'client_prefixe', 'client_annee', 'client_increment',
         'tva_taux', 'delai_franchise_defaut', 'active',
+        'motif_suspension', 'suspendue_at',
     ];
 
     protected function casts(): array

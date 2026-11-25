@@ -9,6 +9,7 @@ use App\Models\Agence;
 use App\Models\DemandeAgence;
 use App\Models\DemandeDemo;
 use App\Models\Invitation;
+use App\Models\JournalPlateforme;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,6 +24,9 @@ class AdministrationPlateformeController extends Controller
     public function index(Request $request): View
     {
         $onglet = $request->query('onglet', 'attente');
+        $recherche = trim((string) $request->query('recherche', ''));
+        $type = (string) $request->query('type', 'toutes');
+        $statut = (string) $request->query('statut', 'toutes');
 
         if ($onglet === 'traitees') {
             $demandes = DemandeAgence::where('statut', '!=', 'en_attente')
@@ -37,16 +41,35 @@ class AdministrationPlateformeController extends Controller
                 ->withQueryString();
         }
 
+        $agencesQuery = Agence::withCount('users')
+            ->when($recherche !== '', function ($query) use ($recherche) {
+                $query->where(function ($sous) use ($recherche) {
+                    $sous->where('nom', 'like', '%'.$recherche.'%')
+                        ->orWhere('email', 'like', '%'.$recherche.'%');
+                });
+            })
+            ->when($type !== 'toutes', fn ($query) => $query->where('type', $type))
+            ->when($statut !== 'toutes', fn ($query) => $query->where('active', $statut === 'actives'))
+            ->orderBy('nom');
+
         return view('plateforme.index', [
             'agencesActives' => Agence::where('active', true)->count(),
             'agencesSuspendues' => Agence::where('active', false)->count(),
             'demandesEnAttente' => DemandeAgence::where('statut', 'en_attente')->count(),
             'demandes' => $demandes,
             'onglet' => $onglet,
-            'agences' => Agence::withCount('users')->orderBy('nom')
-                ->paginate(10, ['*'], 'agences_page')
+            'recherche' => $recherche,
+            'type' => $type,
+            'statut' => $statut,
+            'solos' => Agence::where('type', 'solo')->count(),
+            'agencesType' => Agence::where('type', 'agence')->count(),
+            'demandesCeMois' => DemandeAgence::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count(),
+            'agences' => $agencesQuery->paginate(10, ['*'], 'agences_page')
                 ->withQueryString(),
             'demandesDemo' => DemandeDemo::count(),
+            'journalCount' => JournalPlateforme::count(),
             'demos' => DemandeDemo::orderBy('creneau_at')
                 ->paginate(10, ['*'], 'demos_page')
                 ->withQueryString(),
@@ -113,6 +136,8 @@ class AdministrationPlateformeController extends Controller
                 'traitee_at' => now(),
             ]);
 
+            JournalPlateforme::enregistrer('demande_approuvee', $demande);
+
             return [$agence, $invitation];
         });
 
@@ -147,15 +172,83 @@ class AdministrationPlateformeController extends Controller
             'traitee_at' => now(),
         ]);
 
+        JournalPlateforme::enregistrer('demande_refusee', $demande, $donnees['motif_refus'] ?? null);
+
         return back()->with('succes', 'La demande de '.$demande->nom_agence.' a été refusée.');
     }
 
-    public function changerStatutAgence(Agence $agence): RedirectResponse
+    public function changerStatutAgence(Request $request, Agence $agence): RedirectResponse
     {
-        $agence->update(['active' => ! $agence->active]);
+        $suspension = $agence->active;
 
-        return back()->with('succes', $agence->active
-            ? 'L’agence « '.$agence->nom.' » est réactivée.'
-            : 'L’agence « '.$agence->nom.' » est suspendue.');
+        if ($suspension && $request->user()->agence_id === $agence->id) {
+            return back()->withErrors([
+                'agence' => 'Vous ne pouvez pas suspendre votre propre agence.',
+            ]);
+        }
+
+        $donnees = $request->validate([
+            'motif' => $suspension
+                ? ['required', 'string', 'min:3', 'max:300']
+                : ['nullable', 'string', 'max:300'],
+        ], [
+            'motif.required' => 'Le motif de suspension est obligatoire.',
+            'motif.min' => 'Le motif doit contenir au moins 3 caractères.',
+            'motif.max' => 'Le motif ne peut pas dépasser 300 caractères.',
+        ]);
+
+        DB::transaction(function () use ($agence, $donnees, $suspension, $request) {
+            $agence->update($suspension
+                ? [
+                    'active' => false,
+                    'motif_suspension' => $donnees['motif'],
+                    'suspendue_at' => now(),
+                ]
+                : [
+                    'active' => true,
+                    'motif_suspension' => null,
+                    'suspendue_at' => null,
+                ]);
+
+            JournalPlateforme::enregistrer(
+                $suspension ? 'agence_suspendue' : 'agence_reactivee',
+                $agence,
+                $donnees['motif'] ?? null
+            );
+        });
+
+        return back()->with('succes', $suspension
+            ? 'L’agence « '.$agence->nom.' » est suspendue.'
+            : 'L’agence « '.$agence->nom.' » est réactivée.');
+    }
+
+    public function enregistrerNotes(Request $request, DemandeAgence $demande): RedirectResponse
+    {
+        $donnees = $request->validate([
+            'notes' => ['nullable', 'string', 'max:2000'],
+            'dernier_contact_at' => ['nullable', 'date', 'before_or_equal:today'],
+        ], [
+            'notes.max' => 'Les notes ne peuvent pas dépasser 2000 caractères.',
+            'dernier_contact_at.date' => 'La date de dernier contact n’est pas valide.',
+            'dernier_contact_at.before_or_equal' => 'La date de dernier contact ne peut pas être dans le futur.',
+        ]);
+
+        $demande->update([
+            'notes' => $donnees['notes'] ?? null,
+            'dernier_contact_at' => $donnees['dernier_contact_at'] ?? null,
+        ]);
+
+        JournalPlateforme::enregistrer('notes_modifiees', $demande);
+
+        return back()->with('succes', 'Notes et contact mis à jour pour '.$demande->nom_agence.'.');
+    }
+
+    public function journal(): View
+    {
+        return view('plateforme.journal', [
+            'entrees' => JournalPlateforme::with('user')
+                ->latest()
+                ->paginate(20),
+        ]);
     }
 }

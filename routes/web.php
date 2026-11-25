@@ -89,7 +89,9 @@ Route::middleware(['auth', AdministrationPlateforme::class])
         Route::get('/', [AdministrationPlateformeController::class, 'index'])->name('index');
         Route::post('/demandes/{demande}/approuver', [AdministrationPlateformeController::class, 'approuver'])->name('demandes.approuver');
         Route::post('/demandes/{demande}/refuser', [AdministrationPlateformeController::class, 'refuser'])->name('demandes.refuser');
+        Route::post('/demandes/{demande}/notes', [AdministrationPlateformeController::class, 'enregistrerNotes'])->name('demandes.notes');
         Route::post('/agences/{agence}/statut', [AdministrationPlateformeController::class, 'changerStatutAgence'])->name('agences.statut');
+        Route::get('/journal', [AdministrationPlateformeController::class, 'journal'])->name('journal');
     });
 
 Route::middleware(['auth', AgenceActive::class])->group(function () {

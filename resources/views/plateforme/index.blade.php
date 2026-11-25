@@ -54,6 +54,10 @@
                     Traiter
                     <x-icone nom="chevron-droit" :taille="14" />
                 </a>
+                <a href="{{ route('plateforme.journal') }}" class="lien">
+                    Journal
+                    <x-icone nom="calendrier" :taille="14" />
+                </a>
             </div>
         </section>
 
@@ -80,9 +84,27 @@
             <article class="console-tuile">
                 <span class="picto"><x-icone nom="equipe" :taille="18" /></span>
                 <div class="min-w-0">
-                    <p class="valeur">{{ $totalAgences }}</p>
-                    <p class="libelle">Agences enregistrées</p>
-                    <p class="detail">Depuis l’ouverture du service</p>
+                    <p class="valeur">{{ $agencesType }}</p>
+                    <p class="libelle">Agences</p>
+                    <p class="detail">Organisations enregistrées</p>
+                </div>
+            </article>
+
+            <article class="console-tuile">
+                <span class="picto"><x-icone nom="utilisateur" :taille="18" /></span>
+                <div class="min-w-0">
+                    <p class="valeur">{{ $solos }}</p>
+                    <p class="libelle">Solos</p>
+                    <p class="detail">Comptes indépendants</p>
+                </div>
+            </article>
+
+            <article class="console-tuile">
+                <span class="picto"><x-icone nom="calendrier" :taille="18" /></span>
+                <div class="min-w-0">
+                    <p class="valeur">{{ $demandesCeMois }}</p>
+                    <p class="libelle">Demandes ce mois</p>
+                    <p class="detail">Nouvelles inscriptions</p>
                 </div>
             </article>
         </section>
@@ -214,6 +236,13 @@
                                         <x-icone nom="calendrier" :taille="13" />
                                         Reçue le {{ $demande->created_at->translatedFormat('j M Y à H:i') }}
                                     </span>
+
+                                    @if ($demande->dernier_contact_at)
+                                        <span>
+                                            <x-icone nom="calendrier" :taille="13" />
+                                            Dernier contact : {{ $demande->dernier_contact_at->format('d/m/Y') }}
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -233,6 +262,21 @@
                                        aria-label="Motif du refus">
                                 <x-bouton type="submit" variante="contour" taille="petit">Refuser</x-bouton>
                             </form>
+
+                            @php
+                                $numeroWhatsapp = preg_replace('/\D/', '', (string) $demande->telephone);
+                                if (strlen($numeroWhatsapp) === 8) {
+                                    $numeroWhatsapp = '228'.$numeroWhatsapp;
+                                }
+                            @endphp
+
+                            <div class="console-contact">
+                                @if ($numeroWhatsapp !== '')
+                                    <a href="https://wa.me/{{ $numeroWhatsapp }}" target="_blank" rel="noopener" class="lien-action">WhatsApp</a>
+                                @endif
+                                <a href="mailto:{{ $demande->email }}" class="lien-action">E-mail</a>
+                                <button type="button" class="btn btn-petit" data-modale-notes="{{ $demande->id }}" data-modale-ouvrir="#modale-notes-{{ $demande->id }}">Notes</button>
+                            </div>
                         </div>
                     </article>
                 @empty
@@ -334,6 +378,42 @@
             </div>
 
             <div class="carte overflow-hidden">
+                <div class="carte-corps border-b" style="border-color: var(--c-line-soft)">
+                    <form method="GET" action="{{ route('plateforme.index') }}" class="barre-filtres">
+                        <input type="hidden" name="onglet" value="{{ $onglet }}">
+
+                        <label class="filtre">
+                            <span class="filtre-label">Recherche :</span>
+                            <input type="search" name="recherche" value="{{ $recherche }}"
+                                   placeholder="Nom ou e-mail" aria-label="Rechercher une agence par nom ou e-mail">
+                        </label>
+
+                        <label class="filtre">
+                            <span class="filtre-label">Type :</span>
+                            <select name="type">
+                                <option value="toutes" @selected($type === 'toutes')>Toutes</option>
+                                <option value="agence" @selected($type === 'agence')>Agences</option>
+                                <option value="solo" @selected($type === 'solo')>Solos</option>
+                            </select>
+                        </label>
+
+                        <label class="filtre">
+                            <span class="filtre-label">Statut :</span>
+                            <select name="statut">
+                                <option value="toutes" @selected($statut === 'toutes')>Toutes</option>
+                                <option value="actives" @selected($statut === 'actives')>Actives</option>
+                                <option value="suspendues" @selected($statut === 'suspendues')>Suspendues</option>
+                            </select>
+                        </label>
+
+                        <x-bouton type="submit" variante="contour" taille="petit">Filtrer</x-bouton>
+
+                        @if ($recherche !== '' || $type !== 'toutes' || $statut !== 'toutes')
+                            <a href="{{ route('plateforme.index', ['onglet' => $onglet]) }}" class="lien-action">Réinitialiser</a>
+                        @endif
+                    </form>
+                </div>
+
                 <div class="tableau-scroll">
                     <table class="tableau">
                         <thead>
@@ -354,6 +434,10 @@
                                             <div class="min-w-0">
                                                 <p class="nom truncate">{{ $agence->nom }}</p>
                                                 <p class="slug truncate">{{ $agence->slug }} · {{ ucfirst($agence->type) }}</p>
+                                                @if (! $agence->active && $agence->motif_suspension)
+                                                    <p class="text-[12px] text-muted">Motif : {{ $agence->motif_suspension }}</p>
+                                                @endif
+                                                <p class="text-[12px] text-muted">Créée le {{ $agence->created_at->translatedFormat('j M Y') }}</p>
                                             </div>
                                         </div>
                                     </td>
@@ -372,13 +456,11 @@
                                         </x-badge>
                                     </td>
                                     <td class="cellule-droite">
-                                        <form method="POST" action="{{ route('plateforme.agences.statut', $agence) }}"
-                                              data-confirmer="{{ $agence->active ? 'Suspendre' : 'Réactiver' }} l’agence {{ $agence->nom }} ?">
-                                            @csrf
-                                            <button class="btn btn-petit {{ $agence->active ? 'btn-fantome' : 'btn-contour' }}" type="submit">
-                                                {{ $agence->active ? 'Suspendre' : 'Réactiver' }}
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                                class="btn btn-petit {{ $agence->active ? 'btn-fantome' : 'btn-contour' }}"
+                                                data-modale-ouvrir="#modale-statut-{{ $agence->id }}">
+                                            {{ $agence->active ? 'Suspendre' : 'Réactiver' }}
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
@@ -401,4 +483,85 @@
             </div>
         </section>
     </div>
+
+    {{-- Modales de notes et contact (une par demande affichée) ----------- --}}
+    @foreach ($demandes as $demande)
+        <x-modale
+            id="modale-notes-{{ $demande->id }}"
+            titre="Notes et contact"
+            :sous-titre="$demande->nom_agence.' · '.$demande->nom_contact"
+        >
+            <form method="POST" action="{{ route('plateforme.demandes.notes', $demande) }}">
+                @csrf
+
+                <x-champ-zone
+                    nom="notes"
+                    label="Notes internes"
+                    :valeur="$demande->notes"
+                    aide="Maximum 2000 caractères."
+                    maxlength="2000"
+                />
+
+                <x-champ
+                    nom="dernier_contact_at"
+                    label="Date du dernier contact"
+                    type="date"
+                    :valeur="$demande->dernier_contact_at?->format('Y-m-d')"
+                    aide="Facultatif."
+                />
+
+                <div class="modale-pied">
+                    <x-bouton type="button" variante="contour" data-modale-fermer>Annuler</x-bouton>
+                    <x-bouton type="submit">Enregistrer</x-bouton>
+                </div>
+            </form>
+        </x-modale>
+    @endforeach
+
+    {{-- Modales de suspension / réactivation (une par agence affichée) ----- --}}
+    @foreach ($agences as $agence)
+        <x-modale
+            :id="'modale-statut-'.$agence->id"
+            :titre="$agence->active ? 'Suspendre l’agence' : 'Réactiver l’agence'"
+            :sous-titre="$agence->nom"
+        >
+            <form method="POST" action="{{ route('plateforme.agences.statut', $agence) }}">
+                @csrf
+
+                @if ($agence->active)
+                    <div class="bandeau bandeau--alerte mb-4">
+                        <x-icone nom="attention" :taille="16" />
+                        <span>Les utilisateurs de cette agence ne pourront plus se connecter.</span>
+                    </div>
+                @else
+                    <div class="bandeau bandeau--succes mb-4">
+                        <x-icone nom="check" :taille="16" />
+                        <span>Les utilisateurs de cette agence pourront de nouveau se connecter.</span>
+                    </div>
+                @endif
+
+                <label class="champ" for="motif-{{ $agence->id }}">
+                    <span class="champ-label">Motif{{ $agence->active ? '' : ' (facultatif)' }}</span>
+                    <input
+                        id="motif-{{ $agence->id }}"
+                        name="motif"
+                        type="text"
+                        maxlength="300"
+                        value="{{ old('motif') }}"
+                        @if ($agence->active) required @endif
+                        placeholder="{{ $agence->active ? 'Ex. Impayés, non-conformité…' : 'Précisez le contexte (facultatif)' }}"
+                        autocomplete="off"
+                    >
+                    @if ($errors->first('motif'))
+                        <span class="erreur" role="alert">{{ $errors->first('motif') }}</span>
+                    @endif
+                </label>
+
+                <div class="modale-pied">
+                    <x-bouton type="button" variante="contour" data-modale-fermer>Annuler</x-bouton>
+                    <x-bouton type="submit">{{ $agence->active ? 'Suspendre' : 'Réactiver' }}</x-bouton>
+                </div>
+            </form>
+        </x-modale>
+    @endforeach
 @endsection

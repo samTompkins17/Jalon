@@ -12,11 +12,15 @@ class DemandeAgence extends Model
     protected $fillable = [
         'nom_agence', 'nom_contact', 'email', 'telephone', 'numero_agrement',
         'statut', 'motif_refus', 'traitee_par', 'agence_id', 'traitee_at',
+        'notes', 'dernier_contact_at',
     ];
 
     protected function casts(): array
     {
-        return ['traitee_at' => 'datetime'];
+        return [
+            'traitee_at' => 'datetime',
+            'dernier_contact_at' => 'datetime',
+        ];
     }
 
     public function agence(): BelongsTo

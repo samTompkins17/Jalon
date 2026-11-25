@@ -66,12 +66,44 @@ class DemandesAgenceTest extends TestCase
     public function test_platform_admin_can_suspend_an_agency(): void
     {
         $superAdmin = $this->creerSuperAdmin();
-        $agence = Agence::create([
-            'nom' => 'Agence à suspendre',
-            'slug' => 'agence-test-'.Str::uuid(),
-            'email' => 'suspension-'.Str::uuid().'@example.test',
-            'type' => 'agence',
+        $agence = $this->creerAgence();
+
+        $this->actingAs($superAdmin)
+            ->post(route('plateforme.agences.statut', $agence), [
+                'motif' => 'Impayés signalés par la comptabilité',
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('agences', [
+            'id' => $agence->id,
+            'active' => false,
+            'motif_suspension' => 'Impayés signalés par la comptabilité',
+        ]);
+        $this->assertNotNull($agence->fresh()->suspendue_at);
+    }
+
+    public function test_suspension_sans_motif_echoue_validation(): void
+    {
+        $superAdmin = $this->creerSuperAdmin();
+        $agence = $this->creerAgence();
+
+        $this->actingAs($superAdmin)
+            ->post(route('plateforme.agences.statut', $agence), [])
+            ->assertSessionHasErrors('motif');
+
+        $this->assertDatabaseHas('agences', [
+            'id' => $agence->id,
             'active' => true,
+        ]);
+    }
+
+    public function test_reactivation_efface_motif_suspension(): void
+    {
+        $superAdmin = $this->creerSuperAdmin();
+        $agence = $this->creerAgence([
+            'active' => false,
+            'motif_suspension' => 'Suspension de test',
+            'suspendue_at' => now(),
         ]);
 
         $this->actingAs($superAdmin)
@@ -80,8 +112,39 @@ class DemandesAgenceTest extends TestCase
 
         $this->assertDatabaseHas('agences', [
             'id' => $agence->id,
-            'active' => false,
+            'active' => true,
+            'motif_suspension' => null,
+            'suspendue_at' => null,
         ]);
+    }
+
+    public function test_super_admin_ne_peut_pas_suspendre_sa_propre_agence(): void
+    {
+        $superAdmin = $this->creerSuperAdmin();
+        $agence = $this->creerAgence();
+        $superAdmin->forceFill(['agence_id' => $agence->id])->save();
+
+        $this->actingAs($superAdmin)
+            ->post(route('plateforme.agences.statut', $agence), [
+                'motif' => 'Tentative de suspension',
+            ])
+            ->assertSessionHasErrors('agence');
+
+        $this->assertDatabaseHas('agences', [
+            'id' => $agence->id,
+            'active' => true,
+        ]);
+    }
+
+    private function creerAgence(array $attributs = []): Agence
+    {
+        return Agence::create(array_merge([
+            'nom' => 'Agence test',
+            'slug' => 'agence-test-'.Str::uuid(),
+            'email' => 'agence-'.Str::uuid().'@example.test',
+            'type' => 'agence',
+            'active' => true,
+        ], $attributs));
     }
 
     private function creerSuperAdmin(): User
