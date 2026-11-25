@@ -66,5 +66,25 @@
 
     <x-toasts />
     <script src="{{ asset('js/ui-animations.js') }}" defer></script>
+    <script>
+        // Scroll reveal avec IntersectionObserver
+        (function() {
+            const elements = document.querySelectorAll('.console-tuile, .console-demande, .console-section-titre');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            elements.forEach(el => observer.observe(el));
+        })();
+    </script>
 </body>
 </html>

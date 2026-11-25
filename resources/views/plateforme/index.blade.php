@@ -64,47 +64,57 @@
         {{-- Indicateurs --------------------------------------------------- --}}
         <section class="console-tuiles" aria-label="Indicateurs plateforme">
             <article class="console-tuile">
-                <span class="picto picto--vert"><x-icone nom="check" :taille="18" /></span>
-                <div class="min-w-0">
-                    <p class="valeur">{{ $agencesActives }}</p>
-                    <p class="libelle">Agences actives</p>
-                    <p class="detail">Accès opérationnel</p>
+                <div class="console-tuile-inner">
+                    <span class="picto picto--vert"><x-icone nom="check" :taille="18" /></span>
+                    <div class="min-w-0">
+                        <p class="valeur">{{ $agencesActives }}</p>
+                        <p class="libelle">Agences actives</p>
+                        <p class="detail">Accès opérationnel</p>
+                    </div>
                 </div>
             </article>
 
             <article class="console-tuile">
-                <span class="picto picto--rose"><x-icone nom="fermer" :taille="18" /></span>
-                <div class="min-w-0">
-                    <p class="valeur">{{ $agencesSuspendues }}</p>
-                    <p class="libelle">Agences suspendues</p>
-                    <p class="detail">Connexion bloquée</p>
+                <div class="console-tuile-inner">
+                    <span class="picto picto--rose"><x-icone nom="fermer" :taille="18" /></span>
+                    <div class="min-w-0">
+                        <p class="valeur">{{ $agencesSuspendues }}</p>
+                        <p class="libelle">Agences suspendues</p>
+                        <p class="detail">Connexion bloquée</p>
+                    </div>
                 </div>
             </article>
 
             <article class="console-tuile">
-                <span class="picto"><x-icone nom="equipe" :taille="18" /></span>
-                <div class="min-w-0">
-                    <p class="valeur">{{ $agencesType }}</p>
-                    <p class="libelle">Agences</p>
-                    <p class="detail">Organisations enregistrées</p>
+                <div class="console-tuile-inner">
+                    <span class="picto"><x-icone nom="equipe" :taille="18" /></span>
+                    <div class="min-w-0">
+                        <p class="valeur">{{ $agencesType }}</p>
+                        <p class="libelle">Agences</p>
+                        <p class="detail">Organisations enregistrées</p>
+                    </div>
                 </div>
             </article>
 
             <article class="console-tuile">
-                <span class="picto"><x-icone nom="utilisateur" :taille="18" /></span>
-                <div class="min-w-0">
-                    <p class="valeur">{{ $solos }}</p>
-                    <p class="libelle">Solos</p>
-                    <p class="detail">Comptes indépendants</p>
+                <div class="console-tuile-inner">
+                    <span class="picto"><x-icone nom="utilisateur" :taille="18" /></span>
+                    <div class="min-w-0">
+                        <p class="valeur">{{ $solos }}</p>
+                        <p class="libelle">Solos</p>
+                        <p class="detail">Comptes indépendants</p>
+                    </div>
                 </div>
             </article>
 
             <article class="console-tuile">
-                <span class="picto"><x-icone nom="calendrier" :taille="18" /></span>
-                <div class="min-w-0">
-                    <p class="valeur">{{ $demandesCeMois }}</p>
-                    <p class="libelle">Demandes ce mois</p>
-                    <p class="detail">Nouvelles inscriptions</p>
+                <div class="console-tuile-inner">
+                    <span class="picto"><x-icone nom="calendrier" :taille="18" /></span>
+                    <div class="min-w-0">
+                        <p class="valeur">{{ $demandesCeMois }}</p>
+                        <p class="libelle">Demandes ce mois</p>
+                        <p class="detail">Nouvelles inscriptions</p>
+                    </div>
                 </div>
             </article>
         </section>
@@ -141,42 +151,43 @@
                 {{-- Liste des demandes traitées ------------------------------- --}}
                 @forelse ($demandes as $demande)
                     <article class="console-demande">
-                        <div class="console-demande-tete">
-                            <span class="console-monogramme" aria-hidden="true">{{ $initiales($demande->nom_agence) }}</span>
+                        <div class="console-demande-inner">
+                            <div class="console-demande-tete">
+                                <span class="console-monogramme" aria-hidden="true">{{ $initiales($demande->nom_agence) }}</span>
 
-                            <div class="min-w-0 flex-1">
-                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                    <h3 class="text-[15px] font-semibold leading-tight">{{ $demande->nom_agence }}</h3>
-                                    <x-badge :variante="$demande->statut === 'approuvee' ? 'vert' : 'rose'" petit>
-                                        {{ $demande->statut === 'approuvee' ? 'Approuvée' : 'Refusée' }}
-                                    </x-badge>
-                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                        <h3 class="text-[15px] font-semibold leading-tight">{{ $demande->nom_agence }}</h3>
+                                        <x-badge :variante="$demande->statut === 'approuvee' ? 'vert' : 'rose'" petit>
+                                            {{ $demande->statut === 'approuvee' ? 'Approuvée' : 'Refusée' }}
+                                        </x-badge>
+                                    </div>
 
-                                <p class="mt-1 text-[13px] text-ink-2">{{ $demande->nom_contact }}</p>
+                                    <p class="mt-1 text-[13px] text-ink-2">{{ $demande->nom_contact }}</p>
 
-                                <div class="console-demande-meta">
-                                    <span>
-                                        <x-icone nom="document" :taille="13" />
-                                        <a href="mailto:{{ $demande->email }}">{{ $demande->email }}</a>
-                                    </span>
-
-                                    @if ($demande->telephone)
+                                    <div class="console-demande-meta">
                                         <span>
-                                            <x-icone nom="utilisateur" :taille="13" />
-                                            {{ $demande->telephone }}
+                                            <x-icone nom="document" :taille="13" />
+                                            <a href="mailto:{{ $demande->email }}">{{ $demande->email }}</a>
                                         </span>
-                                    @endif
 
-                                    @if ($demande->motif_refus)
-                                        <span>
-                                            <x-icone nom="attention" :taille="13" />
-                                            Motif : {{ $demande->motif_refus }}
-                                        </span>
-                                    @endif
+                                        @if ($demande->telephone)
+                                            <span>
+                                                <x-icone nom="utilisateur" :taille="13" />
+                                                {{ $demande->telephone }}
+                                            </span>
+                                        @endif
 
-                                    @if ($demande->administrateur)
-                                        <span>
-                                            <x-icone nom="equipe" :taille="13" />
+                                        @if ($demande->motif_refus)
+                                            <span>
+                                                <x-icone nom="attention" :taille="13" />
+                                                Motif : {{ $demande->motif_refus }}
+                                            </span>
+                                        @endif
+
+                                        @if ($demande->administrateur)
+                                            <span>
+                                                <x-icone nom="equipe" :taille="13" />
                                             Traité par {{ $demande->administrateur->nom }}
                                         </span>
                                     @endif
@@ -187,6 +198,7 @@
                                     </span>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     </article>
                 @empty
@@ -201,6 +213,7 @@
                 {{-- Liste des demandes en attente (existante) --------------- --}}
                 @forelse ($demandes as $demande)
                     <article class="console-demande">
+                        <div class="console-demande-inner">
                         <div class="console-demande-tete">
                             <span class="console-monogramme" aria-hidden="true">{{ $initiales($demande->nom_agence) }}</span>
 
@@ -277,6 +290,7 @@
                                 <a href="mailto:{{ $demande->email }}" class="lien-action">E-mail</a>
                                 <button type="button" class="btn btn-petit" data-modale-notes="{{ $demande->id }}" data-modale-ouvrir="#modale-notes-{{ $demande->id }}">Notes</button>
                             </div>
+                        </div>
                         </div>
                     </article>
                 @empty
