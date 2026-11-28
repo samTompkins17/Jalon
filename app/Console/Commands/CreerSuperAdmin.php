@@ -6,7 +6,7 @@ use App\Enums\RoleUtilisateur;
 use App\Enums\StatutActivation;
 use App\Models\User;
 use Illuminate\Console\Command;
-
+use Illuminate\Support\Facades\Hash;
 class CreerSuperAdmin extends Command
 {
     protected $signature = 'jalon:creer-super-admin {email} {--nom=}';
@@ -54,7 +54,7 @@ class CreerSuperAdmin extends Command
         $utilisateur->forceFill([
             'nom' => $nom,
             'email' => $email,
-            'password' => $motDePasse,
+            'password' => Hash::make($motDePasse),
             'role' => RoleUtilisateur::Administrateur,
             'statut_activation' => StatutActivation::Actif,
             'est_super_admin' => true,
